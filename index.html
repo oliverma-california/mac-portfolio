@@ -947,9 +947,15 @@ function buildMenubar() {
 function openMenu(i, t) {
   closeMenu();
   t.classList.add("on");
+  const d = renderMenu(MENUS[i].items);
+  d.style.left = Math.min(t.offsetLeft, SW() - 200) + "px";
+  SCREEN.append(d);
+  menuOpen = { i, t, d };
+}
+function renderMenu(items) {
   const d = el("div", "menu");
   d.setAttribute("role", "menu");
-  MENUS[i].items.forEach(it => {
+  items.forEach(it => {
     if (it === "-") return d.append(el("div", "sep"));
     const on = it.enabled ? it.enabled() : !it.disabled;
     const row = el("div", "mi" + (on ? "" : " dis"), `<span class="chk">${it.checked?.() ? "✓" : ""}</span><span class="lbl">${esc(it.label)}</span><span class="key">${it.key ? "⌘" + it.key : ""}</span>`);
@@ -961,12 +967,12 @@ function openMenu(i, t) {
     }
     d.append(row);
   });
-  d.style.left = Math.min(t.offsetLeft, SW() - 200) + "px";
-  SCREEN.append(d);
-  menuOpen = { i, t, d };
+  return d;
 }
 function activate(row, it) {
   if (!menuOpen || menuOpen.busy) return;
+  // a right-click press opens the menu under the pointer; ignore its own release
+  if (menuOpen.context && Date.now() - menuOpen.openedAt < 250) return;
   menuOpen.busy = true;
   let n = 0;
   const blink = setInterval(() => {
@@ -976,8 +982,77 @@ function activate(row, it) {
 }
 function closeMenu() {
   if (!menuOpen) return;
-  menuOpen.t.classList.remove("on"); menuOpen.d.remove(); menuOpen = null;
+  menuOpen.t?.classList.remove("on"); menuOpen.d.remove(); menuOpen = null;
 }
+
+/* ---------------- right-click (contextual) menus ---------------- */
+const copyText = t => navigator.clipboard?.writeText(t).catch(() => {});
+const absURL = h => h.startsWith("mailto:") ? h.slice(7) : new URL(h, location.href).href;
+function openURL(h) { busy(); window.open(h, h.startsWith("mailto:") ? "_self" : "_blank", "noopener"); }
+
+function contextItems(target) {
+  const node = target.closest("[data-item]");
+  const link = target.closest("a[href]");
+  const w = target.closest(".win");
+  const sel = String(getSelection()).trim();
+  const items = [];
+  if (sel && w?.contains(getSelection().anchorNode)) {
+    items.push({ label: "Copy", key: "C", act: () => copyText(sel) }, "-");
+  }
+  if (node) {
+    const id = node.dataset.item, it = ITEMS[id];
+    items.push({ label: "Open", key: "O", act: () => openItem(node) });
+    if (it.href) items.push({ label: it.href.startsWith("mailto:") ? "Copy Email Address" : "Copy Link", act: () => copyText(absURL(it.href)) });
+    items.push({ label: "Get Info", key: "I", act: getInfo });
+    if (it.win && OPEN[it.win]) items.push("-", { label: "Close Window", act: () => closeWin(OPEN[it.win]) });
+    if (id === "trash") items.push("-", MENUS[4].items[1]); // Empty Trash
+    return items;
+  }
+  if (link) {
+    const h = link.getAttribute("href");
+    items.push(
+      { label: h.startsWith("mailto:") ? "Send Email" : "Open Link", act: () => openURL(h) },
+      { label: h.startsWith("mailto:") ? "Copy Email Address" : "Copy Link Address", act: () => copyText(absURL(h)) }, "-");
+  }
+  if (w) {
+    const def = WINDOWS[w.dataset.id];
+    if (def?.type === "folder") items.push(VIEW("icon"), VIEW("list"), "-");
+    else items.push({ label: "Select All", key: "A", act: () => getSelection().selectAllChildren($(".docbody", w)) }, "-");
+    if (!def?.dialog) items.push({ label: w.dataset.prev ? "Unzoom Window" : "Zoom Window", act: () => zoomWin(w) });
+    items.push({ label: "Close Window", key: "W", act: () => closeWin(w) });
+    return items;
+  }
+  // the desktop
+  return [
+    { label: "About This Macintosh…", act: aboutMac }, "-",
+    { label: "Clean Up Desktop", act: cleanUp }, "-",
+    SIZE("small"), SIZE("medium"), SIZE("large"), "-",
+    { label: "Copy Email Address", act: () => copyText(L.email) },
+  ];
+}
+
+function openContextMenu(e) {
+  closeMenu();
+  const t = e.target;
+  // focus the window or icon that was clicked, like a left click would
+  const w = t.closest(".win"); if (w) focusWin(w);
+  const node = t.closest("[data-item]"); select(node);
+  const d = renderMenu(contextItems(t));
+  SCREEN.append(d);
+  let x, y;
+  if (e.clientX || e.clientY) { x = Math.round(e.clientX / S) + 1; y = Math.round(e.clientY / S) + 1; }
+  else { const r = rectOf(node || w || t); x = r.left + 8; y = r.top + 8; } // opened from the keyboard
+  if (x + d.offsetWidth > SW() - 2) x = Math.max(2, x - d.offsetWidth - 2);
+  if (y + d.offsetHeight > SH() - 2) y = Math.max(MENU_H, y - d.offsetHeight - 2);
+  Object.assign(d.style, { left: x + "px", top: y + "px" });
+  menuOpen = { i: -1, t: null, d, context: true, openedAt: Date.now() };
+}
+
+document.addEventListener("contextmenu", e => {
+  e.preventDefault();
+  if ($(".dialog") || $("#boot") || e.target.closest("#menubar,.menu")) return;
+  openContextMenu(e);
+});
 function cleanUp() {
   $$(".win").sort((a, b) => a.style.zIndex - b.style.zIndex).forEach((w, k) => {
     delete w.dataset.prev;
