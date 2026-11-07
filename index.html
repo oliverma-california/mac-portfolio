@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oliver Ma — Macintosh</title>
+<meta name="description" content="Oliver Ma — portfolio: about, experience, projects, publications and contact.">
+<link rel="preload" href="fonts/ChiKareGo2.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/FindersKeepers.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Pixel recreations of Chicago 12 (ChiKareGo2) and Geneva 9 (FindersKeepers) by Giles Booth.
+   Both have a 16px em: use them only at 16px (1x) or 32px (2x) so every glyph pixel lands on a screen pixel. */
+@font-face{font-family:"Chicago 12";src:url("fonts/ChiKareGo2.woff2") format("woff2"),url("fonts/ChiKareGo2.woff") format("woff");font-display:block}
+@font-face{font-family:"Geneva 9";src:url("fonts/FindersKeepers.woff2") format("woff2"),url("fonts/FindersKeepers.woff") format("woff");font-display:block}
+:root{
+  --chrome:"Chicago 12",monospace;
+  --text:"Geneva 9",monospace;
+  --g:16px;--g13:13px;--g15:15px; /* Geneva 9 size and line heights */
+  --dither:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2' shape-rendering='crispEdges'><rect width='2' height='2' fill='white'/><rect width='1' height='1'/><rect x='1' y='1' width='1' height='1'/></svg>");
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{cursor:var(--cur-arrow,default);background:#fff;font-synthesis:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* QuickDraw-style bold: the glyph is drawn twice, 1px apart, and each letter gets 1px wider */
+b,strong{font-weight:normal;text-shadow:1px 0 0 currentColor;letter-spacing:1px}
+i,em{font-style:normal}
+body{
+  overflow:hidden;color:#000;
+  background:#fff var(--dither);background-size:2px 2px;image-rendering:pixelated;
+  font-family:var(--chrome);font-size:16px;line-height:17px;font-weight:normal;
+  -webkit-font-smoothing:none;-moz-osx-font-smoothing:grayscale;
+  user-select:none;-webkit-user-select:none;
+}
+/* the Mac screen; magnified as a whole by applyScale() */
+#screen{position:fixed;left:0;top:0;width:100vw;height:100vh;overflow:hidden;transform-origin:0 0;background:#fff var(--dither);background-size:2px 2px}
+body.busy,body.busy *{cursor:var(--cur-watch,wait)!important}
+a,button,.btn,[data-href]{cursor:var(--cur-hand,pointer)}
+button{font:inherit;color:inherit}
+
+/* rounded CRT corners */
+#corners{position:fixed;inset:0;border-radius:9px;box-shadow:0 0 0 30px #000;pointer-events:none;z-index:99999}
+
+/* ---------- menu bar ---------- */
+#menubar{position:fixed;top:0;left:0;right:0;height:21px;background:#fff;border-bottom:1px solid #000;display:flex;align-items:stretch;padding-left:8px;z-index:5000;white-space:nowrap;overflow:hidden}
+.mtitle{padding:0 10px;height:20px;line-height:19px}
+.mtitle.on{background:#000;color:#fff}
+.mtitle svg{display:block;margin-top:4px}
+#menubar .owner{margin-left:auto;padding:0 14px;line-height:19px}
+.menu{position:fixed;top:20px;background:#fff;border:1px solid #000;box-shadow:1px 1px 0 #000;z-index:5001;min-width:190px;padding:1px 0 2px}
+.mi{display:flex;height:19px;line-height:19px;padding:0 14px 0 4px;white-space:nowrap}
+.mi .chk{width:16px;padding-left:2px}
+.mi .lbl{flex:1}
+.mi .key{margin-left:28px;font-family:var(--chrome)}
+.mi.on{background:#000;color:#fff}
+.mi.dis{color:transparent;background-image:var(--dither);background-size:2px 2px;-webkit-background-clip:text;background-clip:text}
+.sep{border-top:1px dotted #000;margin:3px 0}
+
+/* ---------- icons ---------- */
+.f{fill:var(--f,#fff)}
+.k{fill:#000;stroke:none}
+.opened{--f:url(#dither)}
+[data-item]{outline:none}
+.icon{display:flex;flex-direction:column;align-items:center;width:120px;gap:3px;padding:2px}
+.icon svg{display:block}
+.icon .label{font-family:var(--text);font-size:var(--g);line-height:var(--g13);padding:0 3px;background:#fff;text-align:center;max-width:120px;overflow-wrap:break-word}
+.icon.sel svg{filter:invert(1)}
+.icon.sel .label{background:#000;color:#fff}
+.icon:focus-visible .label{outline:1px dotted #000;outline-offset:1px}
+.dicon{position:fixed;z-index:2;touch-action:none}
+
+/* ---------- windows ---------- */
+.win{position:fixed;background:#fff;border:1px solid #000;box-shadow:1px 1px 0 #000;display:flex;flex-direction:column;min-width:180px;min-height:110px}
+.titlebar{position:relative;height:19px;flex:none;border-bottom:1px solid #000;display:flex;align-items:flex-start;justify-content:center;touch-action:none}
+.win.active .titlebar::before{content:"";position:absolute;left:1px;right:1px;top:3px;bottom:3px;background:repeating-linear-gradient(to bottom,#000 0 1px,#fff 1px 2px)}
+.titlebar .title{position:relative;background:#fff;padding:0 8px;line-height:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 70px)}
+.closebox,.zoombox{position:absolute;top:3px;width:13px;height:13px;padding:0;border:1px solid #000;background:#fff;box-shadow:0 0 0 1px #fff;display:none;cursor:var(--cur-arrow,default)}
+.closebox{left:8px}
+.zoombox{right:8px}
+.zoombox::after{content:"";position:absolute;left:0;top:0;width:6px;height:6px;border-right:1px solid #000;border-bottom:1px solid #000}
+.closebox:active,.zoombox:active{background:#000}
+.win.active .closebox,.win.active .zoombox{display:block}
+.infobar{flex:none;display:flex;justify-content:space-between;gap:12px;padding:2px 10px 1px;font-family:var(--text);font-size:var(--g);line-height:var(--g15);border-bottom:3px double #000;white-space:nowrap;overflow:hidden}
+.content{flex:1;overflow:scroll;position:relative;background:#fff}
+.growbox{position:absolute;right:0;bottom:0;width:16px;height:16px;display:none;touch-action:none;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><rect width='16' height='16' fill='white'/><path d='M0.5 0V16M0 0.5H16' stroke='black'/><rect x='5.5' y='5.5' width='8' height='8' fill='white' stroke='black'/><rect x='2.5' y='2.5' width='6' height='6' fill='white' stroke='black'/></svg>")}
+.win.active .growbox{display:block}
+.win.dialogwin .growbox,.win.dialogwin .zoombox{display:none!important}
+.win.dialogwin .content{overflow:auto}
+
+/* classic scrollbars (WebKit/Blink) */
+.content::-webkit-scrollbar{width:16px;height:16px;background:#fff}
+.content::-webkit-scrollbar-track:vertical{background:#fff var(--dither);background-size:2px 2px;border-left:1px solid #000}
+.content::-webkit-scrollbar-track:horizontal{background:#fff var(--dither);background-size:2px 2px;border-top:1px solid #000}
+.content::-webkit-scrollbar-thumb{background:#fff;border:1px solid #000}
+.content::-webkit-scrollbar-corner{background:#fff;border-left:1px solid #000;border-top:1px solid #000}
+.content::-webkit-scrollbar-button{display:none;width:16px;height:16px;background-color:#fff}
+.content::-webkit-scrollbar-button:vertical:start:decrement,
+.content::-webkit-scrollbar-button:vertical:end:increment,
+.content::-webkit-scrollbar-button:horizontal:start:decrement,
+.content::-webkit-scrollbar-button:horizontal:end:increment{display:block}
+.content::-webkit-scrollbar-button:vertical:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0.5 0V16M0 15.5H16' stroke='black'/><path d='M8.5 3.5L14.5 9.5H11.5V12.5H5.5V9.5H2.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:vertical:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0.5 0V16M0 0.5H16' stroke='black'/><path d='M8.5 12.5L14.5 6.5H11.5V3.5H5.5V6.5H2.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:horizontal:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0 0.5H16M15.5 0V16' stroke='black'/><path d='M3.5 8.5L9.5 2.5V5.5H12.5V11.5H9.5V14.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:horizontal:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0 0.5H16M0.5 0V16' stroke='black'/><path d='M12.5 8.5L6.5 2.5V5.5H3.5V11.5H6.5V14.5Z' fill='white' stroke='black'/></svg>")}
+.win:not(.active) .content::-webkit-scrollbar-track{background:#fff}
+.win:not(.active) .content::-webkit-scrollbar-thumb{background:transparent;border-color:transparent}
+.win:not(.active) .content::-webkit-scrollbar-button{background-image:none!important}
+@supports not selector(::-webkit-scrollbar){.content{scrollbar-color:#000 #fff}}
+
+/* folder views */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:16px 4px;padding:14px 6px;justify-items:center;align-items:start}
+table.list{border-collapse:collapse;width:100%;font-family:var(--text);font-size:var(--g);line-height:var(--g15)}
+table.list th{font-weight:normal;text-align:left;padding:3px 8px;border-bottom:1px solid #000;white-space:nowrap}
+table.list td{padding:1px 8px;white-space:nowrap}
+table.list td:first-child{display:flex;align-items:center;gap:6px}
+table.list tr.sel td{background:#000;color:#fff}
+table.list tr.sel svg{filter:invert(1)}
+
+/* documents */
+.doc .content{cursor:var(--cur-ibeam,text)}
+.docbody{font-family:var(--text);font-size:var(--g);line-height:var(--g15);padding:16px 20px 26px;max-width:700px;user-select:text;-webkit-user-select:text}
+.docbody h1{font-family:var(--chrome);font-size:32px;line-height:35px;margin:0 0 4px;font-weight:normal}
+.docbody h2{font-family:var(--chrome);font-size:16px;line-height:17px;font-weight:normal;margin:20px 0 6px;padding-bottom:2px;border-bottom:1px solid #000}
+.docbody h3{font-family:var(--chrome);font-size:16px;line-height:17px;font-weight:normal;margin:0}
+.docbody p{margin:0 0 10px}
+.docbody ul{margin:4px 0 0;padding-left:18px}
+.docbody li{margin:2px 0}
+.docbody a{text-decoration-thickness:1px;text-underline-offset:2px}
+.docbody a{color:#000}
+.docbody a:hover{background:#000;color:#fff}
+.meta{font-family:var(--text);font-size:var(--g);line-height:var(--g15)}
+hr.dots{border:0;border-top:1px dotted #000;margin:14px 0}
+.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;align-items:center}
+.btn{display:inline-block;font-family:var(--chrome);font-size:16px;font-weight:normal;line-height:17px;border:1px solid #000;border-radius:8px;padding:1px 16px;background:#fff;color:#000!important;text-decoration:none;user-select:none}
+.btn:hover{background:#fff!important}
+.btn:active{background:#000!important;color:#fff!important}
+.btn.default{box-shadow:0 0 0 2px #fff,0 0 0 5px #000;border-radius:8px;margin:5px}
+
+.about-head{display:flex;gap:18px;align-items:center}
+.photo{flex:none;width:132px;height:132px;border:1px solid #000;box-shadow:2px 2px 0 #000;display:grid;place-items:center;background:#fff}
+.photo canvas,.photo img{width:130px;height:130px;display:block;image-rendering:pixelated}
+.tagline{font-family:var(--chrome);font-size:16px;line-height:17px;margin:0}
+.job{padding:12px 0;border-bottom:1px dotted #000}
+.job:last-child{border-bottom:0}
+.job-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px 14px;flex-wrap:wrap}
+.now{display:inline-block;font-family:var(--text);font-size:var(--g);line-height:var(--g13);background:#000;color:#fff;padding:0 4px;margin-left:6px;vertical-align:1px}
+.pub{padding:10px 0;border-bottom:1px dotted #000}
+.pub:last-child{border-bottom:0}
+.pub .ptitle{font-family:var(--chrome);font-size:16px;line-height:17px;margin-bottom:2px}
+.award{display:flex;gap:6px;align-items:flex-start}
+.award svg{flex:none;margin-top:-1px}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 4px;justify-items:center;margin:8px 0 4px}
+.contact-grid a{text-decoration:none}
+.contact-grid a:hover{background:none;color:#000}
+
+/* about this mac */
+.am-top{display:flex;gap:16px;align-items:center;line-height:17px}
+.bars{margin-top:14px;font-family:var(--text);font-size:var(--g);line-height:var(--g15)}
+.bar-row{display:grid;grid-template-columns:130px 70px 1fr;gap:10px;align-items:center;margin:4px 0}
+.bar{height:11px;border:1px solid #000;background:#fff}
+.bar i{display:block;height:100%;background:#000}
+
+/* dialogs */
+.backdrop{position:fixed;inset:0;z-index:8000}
+.dialog{position:fixed;left:50%;top:28%;transform:translateX(-50%);z-index:8001;background:#fff;border:1px solid #000;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 5px #000,2px 2px 0 #000;padding:22px 24px 16px;width:min(420px,calc(100% - 24px))}
+.dialog .dmsg{display:flex;gap:16px;align-items:flex-start;line-height:17px}
+.dialog .btnrow{justify-content:flex-end;margin-top:18px}
+
+/* effects */
+.ghost{position:fixed;z-index:9000;pointer-events:none;border:1px dotted #000}
+.zoomrect{position:fixed;z-index:9000;pointer-events:none;border:1px dotted #000}
+
+/* boot */
+#boot{position:fixed;inset:0;z-index:20000;background:#fff var(--dither);background-size:2px 2px;display:grid;place-items:center}
+#boot .welcome{background:#fff;border:1px solid #000;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 5px #000;padding:22px 40px;text-align:center}
+#shutdown{position:fixed;inset:0;z-index:20000;background:#000;display:grid;place-items:center}
+
+/* narrow screens (in Mac pixels), toggled by applyScale() */
+.small #menubar{padding-left:2px}
+.small .mtitle{padding:0 7px}
+.small #menubar .owner{display:none}
+.small .docbody{padding:14px 14px 22px}
+.small .about-head{flex-direction:column;align-items:flex-start}
+.small .bar-row{grid-template-columns:100px 56px 1fr}
+@media (prefers-reduced-motion:reduce){.zoomrect{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="dither" width="2" height="2" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="#fff"/><rect width="1" height="1" fill="#000"/><rect x="1" y="1" width="1" height="1" fill="#000"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div id="screen">
+  <div id="menubar" role="menubar"></div>
+  <div id="desktop"></div>
+</div>
+<div id="corners"></div>
+
+<noscript>
+  <div style="position:fixed;inset:40px;background:#fff;border:1px solid #000;padding:20px;font-family:Geneva,Arial,sans-serif;z-index:3">
+    This portfolio needs JavaScript to boot. Please enable it.
+  </div>
+</noscript>
+
+<script>
+/* =====================================================================
+   EDIT ME — everything shown on the site comes from this one object.
+   Replace the placeholder text and links with your own.
+   ===================================================================== */
+const DATA = {
+  name: "Oliver Ma",
+  tagline: "Software engineer · EECS @ UC Berkeley",
+  location: "Bay Area, California",
+  diskName: "Oliver HD",
+  // Optional: path or URL to a square photo. It will be dithered to 1-bit, Mac-style.
+  // (Dithering needs the image on the same site, e.g. "photo.jpg" next to this file.)
+  photo: "",
+  about: [
+    "Hi! I'm Oliver, a software engineer and student at the University of California, Berkeley, studying Electrical Engineering & Computer Sciences with a minor in Data Science.",
+    "I love building things — from hackathon projects and machine learning tools to websites for my community. Open the Projects folder to see what I've made, or say hello in Contact.",
+  ],
+  currently: [
+    "Forward Deployed Engineer (Contract) at Anyscale",
+    "Studying EECS, minor in Data Science, at UC Berkeley",
+  ],
+  links: {
+    email: "oliverma@berkeley.edu",
+    linkedin: "https://www.linkedin.com/in/ma-oliver/",
+    github: "https://github.com/oliverma-california/",
+    resume: "resume.pdf",
+  },
+  experience: [
+    { role: "Forward Deployed Engineer (Contract)", org: "Anyscale", location: "San Francisco, CA", dates: "Sep 2026 – Present", current: true, bullets: ["ML infrastructure for physical AI labs."] },
+    { role: "Software Engineering Intern", org: "Capital One", location: "McLean, VA", dates: "Jun 2026 – Aug 2026", bullets: ["AI innovation for Card Tech+ Loyalty."] },
+    { role: "Code Coach", org: "theCoderSchool", location: "Walnut Creek, CA", dates: "Aug 2025 – Feb 2026", bullets: ["Taught students Scratch, Python, and PixelPAD."] },
+    { role: "Data Engineer Intern", org: "Verizon", location: "San Jose, CA", dates: "Jun 2023 – Jul 2023", bullets: ["DevOps monitoring interfaces."] },
+  ],
+  // `link` is the project's main link. Its button label is picked from the URL:
+  // devpost.com → "Devpost", devfolio.co → "Devfolio", anything else → "Live Demo".
+  // Add `linkLabel: "..."` to a project to override the label.
+  projects: [
+    {
+      name: "BlueKingRedKing",
+      blurb: "A simple and elegant Clash Royale guide and deck builder built with Next.js, Tailwind CSS, and TypeScript.",
+      awards: [],
+      link: "https://calhacks-tech.vercel.app",
+      github: "https://github.com/oliverma-california/calhacks-tech",
+    },
+    {
+      name: "MXR Website",
+      blurb: "A sleek and modern website for the Milpitas Xtreme Robotics team, showcasing their projects and achievements.",
+      awards: [],
+      link: "https://mxrwebsite.vercel.app",
+      github: "https://github.com/oliverma-california/mxrwebsite",
+    },
+    {
+      name: "RxReader",
+      blurb: "Instantly scans medications using OCR and LLMs, providing users with clear translations and easy-to-understand explanations.",
+      awards: ["Best Demo — Chinatown Hacks 2025"],
+      link: "https://devpost.com/software/rxreader",
+      github: "https://github.com/unixers/chinatown-hacks",
+    },
+    {
+      name: "OncoVision",
+      blurb: "The convenient machine learning solution to detect early signs of cancer, using TensorFlow and a convolutional neural network.",
+      awards: ["Third Place — E-Med Hacks 2024", "Honorable Mention — BISV Hacks 2025"],
+      link: "https://devpost.com/software/oncovision-bnwl6f",
+      github: "https://github.com/oliverma-california/bisv-hacks",
+    },
+    {
+      name: "Milpitas Hacks 2 Website",
+      blurb: "A modern and minimalist website for the Milpitas Hacks 2/Bay Hacks Hackathon, built with Next.js, Tailwind CSS, and TypeScript.",
+      awards: [],
+      link: "https://milpitashacks2.vercel.app",
+      github: "https://github.com/oliverma-california/milpitashacks2.0",
+    },
+    {
+      name: "Milpitas Hacks Website",
+      blurb: "An SEO-optimized website for Milpitas High School's first-ever on-campus hackathon, achieving #1 search rank on Google and driving increased web traffic and participant registration. Built with React.js, Tailwind CSS, and JavaScript.",
+      awards: [],
+      link: "https://milpitashacks-test.vercel.app",
+      github: "https://github.com/jerrymiahdg/milpitashacks",
+    },
+    {
+      name: "Apical",
+      blurb: "Leverages Keras and computer vision to maintain productivity, reduce distractions, and stay concentrated.",
+      awards: ["4th Place Finalist — HackaKhan 2024"],
+      link: "https://devpost.com/software/apical",
+      github: "https://github.com/bub655/focus-calendar/",
+    },
+    {
+      name: "OpenHarvest",
+      blurb: "The simple, all-in-one solution for managing volunteering at food banks, integrating a CalOES GIS database of local food banks and pantries with a reminder system integrated with calendar apps.",
+      awards: ["Second Place + Code for Cause Track Winner — MountainHacks 2024"],
+      link: "https://devpost.com/software/openharvest",
+      github: "https://github.com/jmshgs/foodbankfinder",
+    },
+    {
+      name: "FoodFind",
+      blurb: "Helps avoid food waste by allowing users to post any surplus or unwanted food, both reducing waste and benefiting the local community. Built with Svelte, Tailwind CSS, shadcn, and Mapbox.",
+      awards: ["Second Place — OAKHacks 2024"],
+      link: "https://devpost.com/software/foodfind-ei5kp6",
+      github: "https://github.com/jmshgs/oakhacks2024",
+    },
+    {
+      name: "WorldChat",
+      blurb: "The online center for language and cultural exchange. A real-time translation chat app using DeepL's machine translation API to break down language barriers and facilitate communication between people from different cultures. Built with Svelte, Tailwind CSS, and shadcn.",
+      awards: ["Third Place — MateoHacks 2025"],
+      link: "https://devfolio.co/projects/worldchat-1354",
+      github: "https://github.com/jmshgs/worldchat",
+    },
+    {
+      name: "CivicIssues",
+      blurb: "A web-based civic engagement platform that empowers users to report and track local issues, fostering community involvement and improving public services. Built with Svelte, Tailwind CSS, shadcn, and Mapbox.",
+      awards: [],
+      link: "https://devpost.com/software/civicissues",
+      github: "https://github.com/quacksire/smoothride",
+    },
+    {
+      name: "EcoNavigator",
+      blurb: "A carbon footprint calculator, using a combination of user input and EPA data to provide nearby transit routes and displaying how much emissions are reduced versus driving. Built with Svelte, Tailwind CSS, shadcn, and Mapbox.",
+      awards: ["Environment Track Winner — BellHacks 2024"],
+      link: "https://devpost.com/software/ecotransit-gqk7uf",
+      github: "https://github.com/jmshgs/bellhacks2024",
+    },
+  ],
+  publications: [
+    {
+      title: "The Comprehensive Guide to Training and Running YOLOv8 Models on Custom Datasets",
+      authors: "Oliver Ma",
+      venue: "Towards Data Science", year: "October 2, 2024",
+      link: "https://medium.com/data-science/the-comprehensive-guide-to-training-and-running-yolov8-models-on-custom-datasets-22946da259c3",
+    },
+  ],
+};
+/* ===================================================================== */
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+// The whole Mac screen is drawn inside #screen and magnified by S, so that every Mac pixel is a
+// whole number of device pixels (like Mini vMac's "Magnify"). All layout math is in Mac pixels.
+const SCREEN = document.getElementById("screen");
+let S = 1, cursorsReady = false;
+const SW = () => Math.floor(innerWidth / S), SH = () => Math.floor(innerHeight / S);
+const rectOf = el => { const b = el.getBoundingClientRect(); return { left: Math.round(b.left / S), top: Math.round(b.top / S), width: Math.round(b.width / S), height: Math.round(b.height / S) }; };
+const isSmall = () => SW() < 480;
+const SIZES = { small: 1, medium: 1.5, large: 2 };
+let uiSize = "medium";
+try { const v = localStorage.getItem("uiSize"); if (SIZES[v]) uiSize = v; } catch {}
+function applyScale() {
+  const dpr = window.devicePixelRatio || 1;
+  const nMin = Math.ceil(dpr - 0.01);                       // at least 1 CSS px per Mac pixel
+  let n = Math.max(nMin, Math.round(SIZES[uiSize] * dpr));  // device pixels per Mac pixel
+  while (n > nMin && (innerWidth * dpr) / n < 240) n--;     // keep at least 240 Mac pixels across on phones
+  const next = n / dpr;
+  const changed = next !== S;
+  S = next;
+  Object.assign(SCREEN.style, { transform: S === 1 ? "" : "scale(" + S + ")", width: innerWidth / S + "px", height: innerHeight / S + "px" });
+  document.body.classList.toggle("small", isSmall());
+  if (changed && cursorsReady) installCursors(); // cursors are 16 Mac pixels, so they scale too
+}
+applyScale();
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MENU_H = 21;
+
+/* ---------------- pixel cursors ---------------- */
+const CURSORS = {
+  arrow: { hot: [1, 1], rows: [
+    "WW..........","WBW.........","WBBW........","WBBBW.......","WBBBBW......","WBBBBBW.....",
+    "WBBBBBBW....","WBBBBBBBW...","WBBBBBBBBW..","WBBBBBWWWWW.","WBBWBBW.....","WBW.WBBW....",
+    "WW..WBBW....","W....WBBW...",".....WBBW...","......WW....",
+  ]},
+  hand: { hot: [5, 1], rows: [
+    "....BB..........","...BWWB.........","...BWWB.........","...BWWB.........","...BWWBBB.......",
+    "...BWWBWWBBB....","...BWWBWWBWWBB..","BB.BWWBWWBWWBWB.","BWBBWWWWWWWWBWB.","BWWBWWWWWWWWWWB.",
+    ".BWBWWWWWWWWWWB.",".BWWWWWWWWWWWWB.","..BWWWWWWWWWWB..","..BWWWWWWWWWB...","...BWWWWWWWWB...",
+    "...BBBBBBBBBB...",
+  ]},
+  ibeam: { hot: [3, 8], rows: [
+    "BBB.BBB","...B...","...B...","...B...","...B...","...B...","...B...","..BBB..",
+    "...B...","...B...","...B...","...B...","...B...","...B...","BBB.BBB",
+  ]},
+  watch: { hot: [7, 8], rows: [
+    ".....BBBBBB.....",".....BBBBBB.....",".....BBBBBB.....","....BBBBBBBB....","...BWWWWWWWWB...",
+    "..BWWWWBWWWWWB..","..BWWWWBWWWWWB..","..BWWWWBWWWWWBB.","..BWWWWBBBBWWBB.","..BWWWWWWWWWWB..",
+    "..BWWWWWWWWWWB..","...BWWWWWWWWB...","....BBBBBBBB....",".....BBBBBB.....",".....BBBBBB.....",
+    ".....BBBBBB.....",
+  ]},
+};
+function cursorURL(c, s) {
+  const w = Math.max(...c.rows.map(r => r.length)), h = c.rows.length;
+  const cv = document.createElement("canvas"); cv.width = w * s; cv.height = h * s;
+  const g = cv.getContext("2d");
+  c.rows.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === ".") return;
+    g.fillStyle = ch === "B" ? "#000" : "#fff"; g.fillRect(x * s, y * s, s, s);
+  }));
+  return cv.toDataURL();
+}
+function installCursors() {
+  const fallback = { arrow: "default", hand: "pointer", ibeam: "text", watch: "wait" };
+  const dpr = window.devicePixelRatio || 1, n = Math.round(S * dpr);
+  for (const [k, c] of Object.entries(CURSORS)) {
+    const u = cursorURL(c, n), u1 = cursorURL(c, Math.max(1, Math.round(S)));
+    const [x, y] = c.hot.map(v => Math.round(v * S));
+    const sets = [
+      `image-set(url("${u}") ${dpr}x) ${x} ${y}, ${fallback[k]}`,
+      `-webkit-image-set(url("${u}") ${dpr}x) ${x} ${y}, ${fallback[k]}`,
+      `url("${u1}") ${x} ${y}, ${fallback[k]}`,
+    ];
+    const v = sets.find(s => CSS.supports("cursor", s)) || fallback[k];
+    document.documentElement.style.setProperty("--cur-" + k, v);
+  }
+}
+
+/* ---------------- icons (32×32, 1-bit) ---------------- */
+const ICON = {
+  folder: `<path class="f" d="M1.5 10.5V6.5H11.5L13.5 9.5V10.5Z"/><rect class="f" x="1.5" y="9.5" width="29" height="18"/>`,
+  doc: `<path class="f" d="M6.5 1.5H20.5L26.5 7.5V30.5H6.5Z"/><path class="f" d="M20.5 1.5V7.5H26.5"/><path d="M9.5 12.5H23.5M9.5 15.5H23.5M9.5 18.5H23.5M9.5 21.5H23.5M9.5 24.5H18.5"/>`,
+  resume: `<path class="f" d="M6.5 1.5H20.5L26.5 7.5V30.5H6.5Z"/><path class="f" d="M20.5 1.5V7.5H26.5"/><rect class="f" x="9.5" y="5.5" width="7" height="8"/><rect class="k" x="12" y="7" width="2" height="2"/><rect class="k" x="11" y="10" width="4" height="3"/><path d="M9.5 17.5H23.5M9.5 20.5H23.5M9.5 23.5H23.5M9.5 26.5H18.5"/>`,
+  mac: `<rect class="f" x="7.5" y="1.5" width="17" height="24"/><rect class="f" x="10.5" y="4.5" width="11" height="10"/><rect class="k" x="13" y="7" width="1" height="2"/><rect class="k" x="18" y="7" width="1" height="2"/><rect class="k" x="15" y="9" width="1" height="2"/><rect class="k" x="13" y="12" width="1" height="1"/><rect class="k" x="14" y="13" width="4" height="1"/><rect class="k" x="18" y="12" width="1" height="1"/><path d="M17.5 20.5H21.5"/><rect class="f" x="7.5" y="25.5" width="17" height="4"/>`,
+  hd: `<rect class="f" x="1.5" y="11.5" width="29" height="11"/><path d="M1.5 19.5H30.5"/><rect class="k" x="4" y="20" width="4" height="2"/>`,
+  trash: `<path class="f" d="M12.5 5.5V2.5H19.5V5.5"/><rect class="f" x="6.5" y="5.5" width="19" height="3"/><path class="f" d="M7.5 8.5H24.5L23.5 30.5H8.5Z"/><path d="M11.5 11.5V27.5M14.5 11.5V27.5M17.5 11.5V27.5M20.5 11.5V27.5"/>`,
+  letter: `<rect class="f" x="1.5" y="8.5" width="29" height="17"/><path d="M1.5 8.5L16 19L30.5 8.5"/>`,
+  news: `<rect class="f" x="4.5" y="2.5" width="23" height="27"/><rect class="k" x="7" y="5" width="18" height="4"/><path d="M7.5 11.5H24.5M7.5 13.5H24.5"/><rect class="f" x="7.5" y="15.5" width="8" height="7"/><path d="M17.5 16.5H24.5M17.5 18.5H24.5M17.5 20.5H24.5M7.5 24.5H24.5M7.5 26.5H24.5"/>`,
+  app: `<path class="f" d="M16 1.5L30.5 16L16 30.5L1.5 16Z"/><rect class="f" x="10.5" y="10.5" width="11" height="11"/><path d="M12.5 13.5H19.5M12.5 15.5H19.5M12.5 17.5H19.5M12.5 19.5H16.5"/>`,
+  briefcase: `<path class="f" d="M11.5 8.5V5.5H20.5V8.5"/><rect class="f" x="2.5" y="8.5" width="27" height="19"/><path d="M2.5 15.5H29.5"/><rect class="f" x="13.5" y="13.5" width="5" height="4"/>`,
+  linkedin: `<rect class="f" x="3.5" y="3.5" width="25" height="25"/><rect class="k" x="8" y="13" width="3" height="11"/><rect class="k" x="8" y="8" width="3" height="3"/><path class="k" d="M14 13h3v2h1v-1h1v-1h4v1h1v1h1v9h-3v-8h-1v-1h-2v1h-1v8h-3z"/>`,
+  github: `<path class="f" d="M16 2.5C8.5 2.5 2.5 8.5 2.5 16C2.5 22 6.5 27 12 28.5V24.5C8 25.5 7.5 22.5 7.5 22.5C6.5 20.5 5.5 20 5.5 20C4 19 5.5 19 5.5 19C7 19 8 20.5 8 20.5C9.5 23 11.5 22 12 21.5C12 20.5 12.5 20 13 19.5C9.5 19 6.5 18 6.5 13C6.5 11.5 7 10.5 8 9.5C7.5 9 7.5 7.5 8 6C8 6 9.5 5.5 12.5 7.5C13.5 7 15 7 16 7C17 7 18.5 7 19.5 7.5C22.5 5.5 24 6 24 6C24.5 7.5 24.5 9 24 9.5C25 10.5 25.5 11.5 25.5 13C25.5 18 22.5 19 19 19.5C19.5 20 20 21 20 22.5V28.5C25.5 27 29.5 22 29.5 16C29.5 8.5 23.5 2.5 16 2.5Z"/>`,
+  trophy: `<path class="f" d="M9.5 3.5H22.5V11.5C22.5 15.5 19.5 18.5 16 18.5C12.5 18.5 9.5 15.5 9.5 11.5Z"/><path d="M9.5 6.5H5.5V9.5C5.5 12.5 7.5 13.5 9.5 13.5M22.5 6.5H26.5V9.5C26.5 12.5 24.5 13.5 22.5 13.5M16 18.5V23.5"/><rect class="f" x="10.5" y="23.5" width="11" height="5"/>`,
+};
+const svgIcon = (k, size = 32) =>
+  `<svg viewBox="0 0 32 32" width="${size}" height="${size}" shape-rendering="${size % 32 ? "geometricPrecision" : "crispEdges"}" fill="none" stroke="#000" stroke-width="1" aria-hidden="true">${ICON[k] || ICON.doc}</svg>`;
+
+const APPLE = [
+  "......XX...", ".....XX....", ".....X.....", "..XXX.XXX..", ".XXXXXXXXX.", "XXXXXXXXX..",
+  "XXXXXXXX...", "XXXXXXXX...", "XXXXXXXXX..", ".XXXXXXXXXX", ".XXXXXXXXX.", "..XXX.XXX..",
+];
+function bitmapSVG(rows, px = 1) {
+  let r = "";
+  rows.forEach((row, y) => [...row].forEach((c, x) => { if (c === "X") r += `<rect x="${x}" y="${y}" width="1" height="1"/>`; }));
+  return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" width="${rows[0].length * px}" height="${rows.length * px}" shape-rendering="crispEdges" fill="currentColor" aria-label="Apple menu">${r}</svg>`;
+}
+
+/* ---------------- items & windows ---------------- */
+const L = DATA.links;
+const mailto = "mailto:" + L.email;
+const ITEMS = {
+  about:        { name: "About Me", icon: "mac", win: "about", kind: "document", size: 4 },
+  experience:   { name: "Experience", icon: "briefcase", win: "experience", kind: "document", size: 8 },
+  projects:     { name: "Projects", icon: "folder", win: "projects", kind: "folder", size: 0 },
+  publications: { name: "Publications", icon: "news", win: "publications", kind: "document", size: 6 },
+  contact:      { name: "Contact", icon: "letter", win: "contact", kind: "document", size: 2 },
+  resume:       { name: "Résumé", icon: "resume", href: L.resume, kind: "PDF document", size: 92 },
+  hd:           { name: DATA.diskName, icon: "hd", win: "hd", kind: "disk", size: 0 },
+  trash:        { name: "Trash", icon: "trash", win: "trash", kind: "trash", size: 0 },
+  oldsite:      { name: "first_website.html", icon: "doc", alert: "This document is too embarrassing to open. It has a visitor counter and a MIDI soundtrack.", kind: "document", size: 3 },
+  email:        { name: "Email", icon: "letter", href: mailto, kind: "alias", size: 1 },
+  linkedin:     { name: "LinkedIn", icon: "linkedin", href: L.linkedin, kind: "alias", size: 1 },
+  github:       { name: "GitHub", icon: "github", href: L.github, kind: "alias", size: 1 },
+};
+function linkLabel(p) {
+  if (p.linkLabel) return p.linkLabel;
+  if (/devpost\.com/i.test(p.link)) return "Devpost";
+  if (/devfolio\.co/i.test(p.link)) return "Devfolio";
+  return "Live Demo";
+}
+DATA.projects.forEach((p, i) => {
+  const award = p.awards?.[0];
+  ITEMS["proj" + i] = { name: p.name, icon: "app", win: "proj" + i, kind: award ? "★ " + award.split(/\s[—–-]\s/)[0].trim() + (p.awards.length > 1 ? " +" + (p.awards.length - 1) : "") : "application", size: 40 + ((i * 37) % 90) };
+});
+ITEMS.projects.size = DATA.projects.reduce((s, _, i) => s + ITEMS["proj" + i].size, 0);
+
+const linkBtns = () => `
+  <a class="btn" href="${esc(mailto)}">Email</a>
+  <a class="btn" href="${esc(L.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
+  <a class="btn" href="${esc(L.github)}" target="_blank" rel="noopener">GitHub</a>
+  <a class="btn default" href="${esc(L.resume)}" target="_blank" rel="noopener">Résumé</a>`;
+
+const WINDOWS = {
+  hd: { title: DATA.diskName, type: "folder", items: ["about", "experience", "projects", "publications", "contact", "resume"], w: 560, h: 290, x: 24, y: 44 },
+  projects: { title: "Projects", type: "folder", items: DATA.projects.map((_, i) => "proj" + i), w: 560, h: 400, view: "icon" },
+  trash: { title: "Trash", type: "folder", items: ["oldsite"], w: 300, h: 170 },
+  about: {
+    title: "About Me", type: "doc", w: 580, h: 500, x: 330, y: 74,
+    html: () => `
+      <div class="about-head">
+        <div class="photo" id="photo">${svgIcon("mac", 96)}</div>
+        <div>
+          <h1>${esc(DATA.name)}</h1>
+          <p class="tagline">${esc(DATA.tagline)}</p>
+          <p class="meta" style="margin-top:4px">${esc(DATA.location)}</p>
+        </div>
+      </div>
+      <hr class="dots">
+      ${DATA.about.map(p => `<p>${esc(p)}</p>`).join("")}
+      ${DATA.currently.length ? `<h2>Currently</h2><ul>${DATA.currently.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+      <div class="btnrow">${linkBtns()}</div>`,
+    mount: w => DATA.photo && ditherPhoto(DATA.photo, $("#photo", w)),
+  },
+  experience: {
+    title: "Experience", type: "doc", w: 560, h: 460,
+    html: () => `<h1>Experience</h1>` + DATA.experience.map(j => `
+      <div class="job">
+        <div class="job-top"><h3>${esc(j.role)}${j.current ? `<span class="now">NOW</span>` : ""}</h3><span class="meta">${esc(j.dates)}</span></div>
+        <div class="meta">${esc(j.org)}${j.location ? " · " + esc(j.location) : ""}</div>
+        ${j.bullets?.length ? `<ul>${j.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+      </div>`).join(""),
+  },
+  publications: {
+    title: "Publications", type: "doc", w: 560, h: 380,
+    html: () => `<h1>Publications</h1>` + DATA.publications.map(p => `
+      <div class="pub">
+        <div class="ptitle">${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div>${esc(p.authors).replace(esc(DATA.name), `<b>${esc(DATA.name)}</b>`)}</div>
+        <div class="meta"><i>${esc(p.venue)}</i>${p.year ? ", " + esc(p.year) : ""}</div>
+      </div>`).join(""),
+  },
+  contact: {
+    title: "Contact", type: "doc", w: 460, h: 290,
+    html: () => `
+      <h1>Say hello</h1>
+      <p>The fastest way to reach me is email. You can also find me here:</p>
+      <div class="contact-grid">
+        ${["email", "linkedin", "github", "resume"].map(id => `
+          <a class="icon" data-item="${id}" href="${esc(ITEMS[id].href)}" ${id === "email" ? "" : 'target="_blank" rel="noopener"'}>
+            ${svgIcon(ITEMS[id].icon)}<span class="label">${esc(ITEMS[id].name)}</span></a>`).join("")}
+      </div>
+      <p class="meta" style="text-align:center;margin-top:10px"><a href="${esc(mailto)}">${esc(L.email)}</a></p>`,
+  },
+};
+DATA.projects.forEach((p, i) => {
+  WINDOWS["proj" + i] = {
+    title: p.name, type: "doc", w: 500, h: 360,
+    html: () => `
+      <div class="about-head" style="gap:14px">${svgIcon("app", 64)}<div><h1>${esc(p.name)}</h1>
+      ${p.date || p.tech?.length ? `<div class="meta">${[p.date, (p.tech || []).join(", ")].filter(Boolean).map(esc).join(" · ")}</div>` : ""}</div></div>
+      <hr class="dots">
+      <p>${esc(p.blurb)}</p>
+      ${p.awards?.length ? `<h2>Awards</h2>${p.awards.map(a => `<div class="award">${svgIcon("trophy", 16)}<span>${esc(a)}</span></div>`).join("")}` : ""}
+      <div class="btnrow">
+        ${p.link ? `<a class="btn" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(linkLabel(p))}</a>` : ""}
+        ${p.github ? `<a class="btn default" href="${esc(p.github)}" target="_blank" rel="noopener">GitHub</a>` : ""}
+      </div>`,
+  };
+});
+
+/* ---------------- window manager ---------------- */
+let Z = 10;
+const OPEN = {};
+const activeWin = () => $(".win.active");
+
+function busy(ms = 260) { document.body.classList.add("busy"); setTimeout(() => document.body.classList.remove("busy"), ms); }
+
+function markOpened(winId, on) {
+  $$(`[data-win="${winId}"]`).forEach(e => e.classList.toggle("opened", on));
+}
+
+function focusWin(w) {
+  if (!w) return;
+  w.style.zIndex = ++Z;
+  $$(".win.active").forEach(x => x !== w && x.classList.remove("active"));
+  w.classList.add("active");
+}
+
+function topWin() {
+  return $$(".win").sort((a, b) => b.style.zIndex - a.style.zIndex)[0];
+}
+
+function placement(def) {
+  const n = Object.keys(OPEN).length;
+  if (isSmall()) {
+    const y = MENU_H + 10 + (n % 5) * 18;
+    return { x: 6, y, w: SW() - 14, h: Math.min(def.h + 60, SH() - y - 10) };
+  }
+  let x = def.x ?? 70 + (n % 8) * 26, y = def.y ?? MENU_H + 40 + (n % 8) * 22;
+  let w = Math.min(def.w, SW() - 20), h = Math.min(def.h, SH() - MENU_H - 20);
+  if (x + w > SW() - 8) x = Math.max(6, SW() - w - 8);
+  if (y + h > SH() - 8) y = Math.max(MENU_H + 6, SH() - h - 8);
+  return { x, y, w, h };
+}
+
+function renderFolder(w, def) {
+  const c = $(".content", w);
+  const view = w.dataset.view;
+  if (view === "list") {
+    c.innerHTML = `<table class="list"><thead><tr><th>Name</th><th>Size</th><th>Kind</th></tr></thead><tbody>${
+      def.items.map(id => { const it = ITEMS[id]; return `<tr data-item="${id}" ${it.win ? `data-win="${it.win}"` : ""} tabindex="0"><td>${svgIcon(it.icon, 16)}${esc(it.name)}</td><td>${it.size}K</td><td>${esc(it.kind)}</td></tr>`; }).join("")
+    }</tbody></table>`;
+  } else {
+    c.innerHTML = `<div class="grid">${def.items.map(id => iconHTML(id)).join("")}</div>`;
+  }
+  def.items.forEach(id => ITEMS[id].win && OPEN[ITEMS[id].win] && markOpened(ITEMS[id].win, true));
+}
+
+function iconHTML(id, cls = "icon") {
+  const it = ITEMS[id];
+  return `<div class="${cls}" data-item="${id}" ${it.win ? `data-win="${it.win}"` : ""} tabindex="0" role="button" aria-label="Open ${esc(it.name)}">${svgIcon(it.icon)}<span class="label">${esc(it.name)}</span></div>`;
+}
+
+function buildWindow(id, def) {
+  const w = el("div", "win " + (def.type === "folder" ? "folder" : "doc") + (def.dialog ? " dialogwin" : ""));
+  w.dataset.id = id;
+  w.dataset.view = def.view || "icon";
+  w.setAttribute("role", "dialog");
+  w.setAttribute("aria-label", def.title);
+  let info = "";
+  if (def.type === "folder") {
+    const n = def.items.length, k = def.items.reduce((s, i) => s + ITEMS[i].size, 0);
+    info = `<div class="infobar"><span>${n} item${n === 1 ? "" : "s"}</span><span>${k.toLocaleString()}K in ${id === "hd" ? "disk" : "folder"}</span><span>1,337K available</span></div>`;
+  }
+  w.innerHTML = `
+    <div class="titlebar"><button class="closebox" aria-label="Close window"></button><span class="title">${esc(def.title)}</span><button class="zoombox" aria-label="Zoom window"></button></div>
+    ${info}<div class="content"></div><div class="growbox" aria-hidden="true"></div>`;
+  if (def.type === "folder") renderFolder(w, def);
+  else $(".content", w).innerHTML = `<div class="docbody">${def.html()}</div>`;
+
+  $(".closebox", w).addEventListener("click", e => { e.stopPropagation(); closeWin(w); });
+  $(".zoombox", w).addEventListener("click", e => { e.stopPropagation(); zoomWin(w); });
+  w.addEventListener("pointerdown", () => focusWin(w), true);
+  dragOutline($(".titlebar", w), w, "move");
+  dragOutline($(".growbox", w), w, "resize");
+  return w;
+}
+
+function openWindow(id, srcEl) {
+  if (OPEN[id]) { focusWin(OPEN[id]); return OPEN[id]; }
+  const def = WINDOWS[id];
+  if (!def) return;
+  const r = placement(def);
+  const w = buildWindow(id, def);
+  Object.assign(w.style, { left: r.x + "px", top: r.y + "px", width: r.w + "px", height: r.h + "px" });
+  OPEN[id] = w;
+  markOpened(id, true);
+  busy();
+  const show = () => { SCREEN.append(w); focusWin(w); def.mount?.(w); };
+  const src = srcEl?.querySelector?.("svg") || srcEl;
+  if (src && src.isConnected) zoomRects(rectOf(src), { left: r.x, top: r.y, width: r.w, height: r.h }, show);
+  else show();
+  return w;
+}
+
+function closeWin(w) {
+  if (!w) return;
+  const id = w.dataset.id;
+  const r = rectOf(w);
+  w.remove();
+  delete OPEN[id];
+  if (WINDOWS[id]?.temp) delete WINDOWS[id];
+  markOpened(id, false);
+  const src = $$(`[data-win="${id}"] svg`).find(s => s.getClientRects().length);
+  if (src) zoomRects(r, rectOf(src), () => {});
+  focusWin(topWin());
+}
+
+function zoomWin(w) {
+  if (w.dataset.prev) {
+    const p = JSON.parse(w.dataset.prev);
+    Object.assign(w.style, p); delete w.dataset.prev;
+  } else {
+    const { left, top, width, height } = w.style;
+    w.dataset.prev = JSON.stringify({ left, top, width, height });
+    Object.assign(w.style, { left: "3px", top: MENU_H + 3 + "px", width: SW() - 8 + "px", height: SH() - MENU_H - 8 + "px" });
+  }
+}
+
+function zoomRects(a, b, done) {
+  if (reduced || document.hidden) return done();
+  const steps = 9, frames = [];
+  let i = 0;
+  const tick = () => {
+    i++;
+    const t = i / steps, lerp = (p, q) => p + (q - p) * t;
+    const d = el("div", "zoomrect");
+    Object.assign(d.style, { left: lerp(a.left, b.left) + "px", top: lerp(a.top, b.top) + "px", width: lerp(a.width, b.width) + "px", height: lerp(a.height, b.height) + "px" });
+    SCREEN.append(d); frames.push(d);
+    if (frames.length > 3) frames.shift().remove();
+    if (i < steps) setTimeout(tick, 16);
+    else setTimeout(() => { frames.forEach(f => f.remove()); done(); }, 20);
+  };
+  tick();
+}
+
+/* classic outline-drag for moving and resizing */
+function dragOutline(handle, w, mode) {
+  handle.addEventListener("pointerdown", e => {
+    if (e.button !== 0 || e.target.closest("button")) return;
+    e.preventDefault();
+    focusWin(w);
+    handle.setPointerCapture(e.pointerId);
+    const r = rectOf(w);
+    const sx = e.clientX, sy = e.clientY;
+    let ghost = null, nr = null;
+    const move = ev => {
+      const dx = Math.round((ev.clientX - sx) / S), dy = Math.round((ev.clientY - sy) / S);
+      if (!ghost && Math.hypot(dx, dy) < 3) return;
+      if (!ghost) { ghost = el("div", "ghost"); SCREEN.append(ghost); }
+      if (mode === "move") {
+        nr = { left: Math.min(Math.max(r.left + dx, 40 - r.width), SW() - 40), top: Math.min(Math.max(r.top + dy, MENU_H), SH() - 24), width: r.width, height: r.height };
+      } else {
+        nr = { left: r.left, top: r.top, width: Math.max(180, r.width + dx), height: Math.max(110, r.height + dy) };
+      }
+      Object.assign(ghost.style, { left: nr.left + "px", top: nr.top + "px", width: nr.width + "px", height: nr.height + "px" });
+    };
+    const up = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+      if (ghost) {
+        ghost.remove();
+        Object.assign(w.style, { left: nr.left + "px", top: nr.top + "px", width: nr.width + "px", height: nr.height + "px" });
+        delete w.dataset.prev;
+      }
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  });
+}
+
+/* ---------------- icon selection & opening ---------------- */
+let lastPointer = "mouse";
+let suppressClick = false;
+const selected = () => $("[data-item].sel");
+function select(node) {
+  $$("[data-item].sel").forEach(n => n !== node && n.classList.remove("sel"));
+  node?.classList.add("sel");
+}
+function openItem(node) {
+  const id = node.dataset.item, it = ITEMS[id];
+  if (!it) return;
+  if (it.href) {
+    if (node.tagName === "A") return; // native link handles it
+    busy(); window.open(it.href, it.href.startsWith("mailto:") ? "_self" : "_blank", "noopener");
+    return;
+  }
+  if (it.alert) return alertBox(it.alert);
+  if (it.win) openWindow(it.win, node);
+}
+
+document.addEventListener("pointerdown", e => {
+  lastPointer = e.pointerType || "mouse";
+  if (e.target.closest(".menu,#menubar")) return;
+  closeMenu();
+  const node = e.target.closest("[data-item]");
+  if (node) select(node);
+  else if (!e.target.closest(".titlebar,.growbox,.btn,a")) select(null);
+});
+document.addEventListener("click", e => {
+  if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
+  const node = e.target.closest("[data-item]");
+  if (!node) return;
+  if (node.tagName === "A" && lastPointer === "mouse") { e.preventDefault(); return; } // mouse: double-click to open, like the Finder
+  if (lastPointer !== "mouse") openItem(node);
+});
+document.addEventListener("dblclick", e => {
+  const node = e.target.closest("[data-item]");
+  if (!node) return;
+  if (node.tagName === "A") { window.open(node.href, node.target || "_self", "noopener"); return; }
+  openItem(node);
+});
+document.addEventListener("keydown", e => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (e.key === "Escape") { closeMenu(); $(".dialog .btn.default")?.click(); return; }
+  if (e.key === "Enter" && !mod) {
+    if ($(".dialog")) { e.preventDefault(); $(".dialog .btn.default")?.click(); return; }
+    const n = document.activeElement?.closest?.("[data-item]");
+    if (n) { e.preventDefault(); select(n); openItem(n); }
+    return;
+  }
+  if (!mod) return;
+  const k = e.key.toLowerCase();
+  if (k === "o" && selected()) { e.preventDefault(); openItem(selected()); }
+  if (k === "w" && activeWin()) { e.preventDefault(); closeWin(activeWin()); }
+  if (k === "i" && selected()) { e.preventDefault(); getInfo(); }
+});
+
+/* desktop icons */
+function buildDesktop() {
+  const d = $("#desktop");
+  d.innerHTML = iconHTML("hd", "icon dicon") + iconHTML("resume", "icon dicon") + iconHTML("trash", "icon dicon");
+  layoutDesktop();
+  $$(".dicon", d).forEach(makeIconDraggable);
+}
+function layoutDesktop() {
+  const [hd, resume, trash] = $$(".dicon");
+  for (const [n, top] of [[hd, MENU_H + 12], [resume, MENU_H + 96]]) {
+    if (!n.dataset.moved) Object.assign(n.style, { left: SW() - 132 + "px", top: top + "px" });
+  }
+  if (!trash.dataset.moved) Object.assign(trash.style, { left: SW() - 132 + "px", top: SH() - 70 + "px" });
+}
+function makeIconDraggable(n) {
+  n.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    const sx = e.clientX, sy = e.clientY, ox = n.offsetLeft, oy = n.offsetTop;
+    let ghost = null;
+    n.setPointerCapture(e.pointerId);
+    const move = ev => {
+      const dx = Math.round((ev.clientX - sx) / S), dy = Math.round((ev.clientY - sy) / S);
+      if (!ghost && Math.hypot(dx, dy) < 4) return;
+      if (!ghost) { ghost = n.cloneNode(true); ghost.style.opacity = ".5"; ghost.style.pointerEvents = "none"; ghost.style.zIndex = 9000; ghost.removeAttribute("data-item"); SCREEN.append(ghost); }
+      ghost.style.left = ox + dx + "px"; ghost.style.top = oy + dy + "px";
+    };
+    const up = ev => {
+      n.removeEventListener("pointermove", move); n.removeEventListener("pointerup", up);
+      if (!ghost) return;
+      const x = Math.min(Math.max(0, ghost.offsetLeft), SW() - 100), y = Math.min(Math.max(MENU_H + 2, ghost.offsetTop), SH() - 60);
+      ghost.remove();
+      const trash = $('.dicon[data-item="trash"]');
+      const tr = trash.getBoundingClientRect();
+      if (n !== trash && ev.clientX > tr.left && ev.clientX < tr.right && ev.clientY > tr.top && ev.clientY < tr.bottom) {
+        alertBox(`The item “${ITEMS[n.dataset.item].name}” is too important to throw away.`);
+      } else {
+        n.style.left = x + "px"; n.style.top = y + "px"; n.dataset.moved = 1;
+      }
+      suppressClick = true; setTimeout(() => (suppressClick = false), 0);
+    };
+    n.addEventListener("pointermove", move); n.addEventListener("pointerup", up);
+  });
+}
+
+/* ---------------- dialogs ---------------- */
+function alertBox(msg, buttons = [{ label: "OK", default: true }], icon = "mac") {
+  closeMenu();
+  const bd = el("div", "backdrop");
+  const d = el("div", "dialog");
+  d.setAttribute("role", "alertdialog");
+  d.innerHTML = `<div class="dmsg">${svgIcon(icon)}<div>${msg}</div></div><div class="btnrow"></div>`;
+  const row = $(".btnrow", d);
+  const close = () => { bd.remove(); d.remove(); };
+  buttons.forEach(b => {
+    const btn = el("button", "btn" + (b.default ? " default" : ""), esc(b.label));
+    btn.addEventListener("click", () => { close(); b.act?.(); });
+    row.append(btn);
+  });
+  SCREEN.append(bd, d);
+  bd.addEventListener("pointerdown", e => { e.stopPropagation(); d.animate?.([{ filter: "invert(1)" }, { filter: "none" }], 120); });
+}
+
+function getInfo() {
+  const n = selected(); if (!n) return;
+  const it = ITEMS[n.dataset.item];
+  const id = "info-" + n.dataset.item;
+  WINDOWS[id] = {
+    title: it.name + " Info", type: "doc", w: 320, h: 240, temp: true, dialog: true,
+    html: () => `<div class="about-head" style="flex-direction:row;align-items:center;gap:12px">${svgIcon(it.icon)}<h3>${esc(it.name)}</h3></div><hr class="dots">
+      <p class="meta">Kind: ${esc(it.kind)}<br>Size: ${it.size}K on disk<br>Where: ${esc(DATA.diskName)}<br>Created: by ${esc(DATA.name)}<br>Version: n/a</p>`,
+  };
+  openWindow(id, n);
+}
+
+function aboutMac() {
+  WINDOWS.aboutmac = WINDOWS.aboutmac || {
+    title: "About This Macintosh", type: "doc", w: 460, h: 270, dialog: true,
+    html: () => `<div class="am-top">${svgIcon("mac", 64)}<div><b>${esc(DATA.name)}’s Macintosh</b><br>System Software 6.0.8<br>Portfolio Edition<br>Total Memory: 4,096K</div></div>
+      <div class="bars">${[["Curiosity", 1536, 0.95], ["Side Projects", 1024, 0.8], ["Coffee", 768, 0.6], ["Sleep", 256, 0.15]]
+        .map(([n, k, f]) => `<div class="bar-row"><span>${n}</span><span>${k.toLocaleString()}K</span><div class="bar"><i style="width:${f * 100}%"></i></div></div>`).join("")}</div>`,
+  };
+  openWindow("aboutmac");
+}
+
+function shutDown() {
+  closeMenu();
+  $$(".win").forEach(w => w.remove()); Object.keys(OPEN).forEach(k => { delete OPEN[k]; markOpened(k, false); });
+  const s = el("div", "", "");
+  s.id = "shutdown";
+  SCREEN.append(s);
+  setTimeout(() => {
+    s.style.background = "";
+    s.style.cssText = "background:#fff var(--dither);background-size:2px 2px";
+    alertBox("You may now switch off your Macintosh safely.<br><br>(Or don’t, and keep browsing.)", [{ label: "Restart", default: true, act: () => { s.remove(); boot(); } }]);
+    $(".backdrop").style.zIndex = 20001; $(".dialog").style.zIndex = 20002;
+  }, 700);
+}
+
+/* ---------------- menus ---------------- */
+// Screen magnification (View menu). Medium is 1.5x on Retina displays.
+function setSize(size) {
+  uiSize = size;
+  try { localStorage.setItem("uiSize", size); } catch {}
+  dispatchEvent(new Event("resize"));
+}
+const SIZE = size => ({
+  label: size[0].toUpperCase() + size.slice(1) + " Size",
+  checked: () => uiSize === size,
+  act: () => setSize(size),
+});
+
+const VIEW = mode => ({
+  label: mode === "icon" ? "by Icon" : "by Name",
+  checked: () => activeWin()?.classList.contains("folder") && activeWin().dataset.view === mode,
+  enabled: () => activeWin()?.classList.contains("folder"),
+  act: () => { const w = activeWin(); w.dataset.view = mode; renderFolder(w, WINDOWS[w.dataset.id]); },
+});
+const MENUS = [
+  { title: bitmapSVG(APPLE), items: [
+    { label: "About This Macintosh…", act: aboutMac }, "-",
+    { label: "About Me", act: () => openWindow("about") },
+    { label: "Experience", act: () => openWindow("experience") },
+    { label: "Projects", act: () => openWindow("projects") },
+    { label: "Publications", act: () => openWindow("publications") },
+    { label: "Contact", act: () => openWindow("contact") },
+  ]},
+  { title: "File", items: [
+    { label: "Open", key: "O", enabled: () => !!selected(), act: () => openItem(selected()) },
+    { label: "Close", key: "W", enabled: () => !!activeWin(), act: () => closeWin(activeWin()) }, "-",
+    { label: "Get Info", key: "I", enabled: () => !!selected(), act: getInfo }, "-",
+    { label: "Print Résumé…", act: () => window.open(L.resume, "_blank", "noopener") },
+    { label: "Eject", key: "E", disabled: true },
+  ]},
+  { title: "Edit", items: [
+    { label: "Undo", key: "Z", disabled: true }, "-",
+    { label: "Cut", key: "X", disabled: true },
+    { label: "Copy", key: "C", enabled: () => !!String(getSelection()).trim(), act: () => navigator.clipboard?.writeText(String(getSelection())) },
+    { label: "Paste", key: "V", disabled: true },
+    { label: "Clear", disabled: true }, "-",
+    { label: "Copy Email Address", act: () => { navigator.clipboard?.writeText(L.email); alertBox(`Copied <b>${esc(L.email)}</b> to the Clipboard.`, undefined, "letter"); } },
+  ]},
+  { title: "View", items: [VIEW("icon"), VIEW("list"), "-", SIZE("small"), SIZE("medium"), SIZE("large")] },
+  { title: "Special", items: [
+    { label: "Clean Up Desktop", act: cleanUp },
+    { label: "Empty Trash", act: () => alertBox("The Trash contains 1 item that is too precious to delete. It will stay right where it is.", undefined, "trash") }, "-",
+    { label: "Restart", act: () => { $$(".win").forEach(w => closeWin(w)); boot(); } },
+    { label: "Shut Down", act: shutDown },
+  ]},
+];
+let menuOpen = null;
+function buildMenubar() {
+  const mb = $("#menubar");
+  MENUS.forEach((m, i) => {
+    const t = el("div", "mtitle", m.title);
+    t.setAttribute("role", "menuitem");
+    t.tabIndex = 0;
+    t.addEventListener("pointerdown", e => { e.preventDefault(); if (menuOpen?.i === i) closeMenu(); else openMenu(i, t); });
+    t.addEventListener("pointerenter", () => { if (menuOpen && menuOpen.i !== i) openMenu(i, t); });
+    t.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); menuOpen?.i === i ? closeMenu() : openMenu(i, t); } });
+    mb.append(t);
+  });
+  mb.append(el("div", "owner", esc(DATA.name)));
+}
+function openMenu(i, t) {
+  closeMenu();
+  t.classList.add("on");
+  const d = el("div", "menu");
+  d.setAttribute("role", "menu");
+  MENUS[i].items.forEach(it => {
+    if (it === "-") return d.append(el("div", "sep"));
+    const on = it.enabled ? it.enabled() : !it.disabled;
+    const row = el("div", "mi" + (on ? "" : " dis"), `<span class="chk">${it.checked?.() ? "✓" : ""}</span><span class="lbl">${esc(it.label)}</span><span class="key">${it.key ? "⌘" + it.key : ""}</span>`);
+    row.setAttribute("role", "menuitem");
+    if (on) {
+      row.addEventListener("pointerenter", () => { $$(".mi.on", d).forEach(x => x.classList.remove("on")); row.classList.add("on"); });
+      row.addEventListener("pointerleave", () => row.classList.remove("on"));
+      row.addEventListener("pointerup", () => activate(row, it));
+    }
+    d.append(row);
+  });
+  d.style.left = Math.min(t.offsetLeft, SW() - 200) + "px";
+  SCREEN.append(d);
+  menuOpen = { i, t, d };
+}
+function activate(row, it) {
+  if (!menuOpen || menuOpen.busy) return;
+  menuOpen.busy = true;
+  let n = 0;
+  const blink = setInterval(() => {
+    row.classList.toggle("on");
+    if (++n >= 4) { clearInterval(blink); closeMenu(); it.act?.(); }
+  }, 45);
+}
+function closeMenu() {
+  if (!menuOpen) return;
+  menuOpen.t.classList.remove("on"); menuOpen.d.remove(); menuOpen = null;
+}
+function cleanUp() {
+  $$(".win").sort((a, b) => a.style.zIndex - b.style.zIndex).forEach((w, k) => {
+    delete w.dataset.prev;
+    if (isSmall()) Object.assign(w.style, { left: "6px", top: MENU_H + 10 + k * 18 + "px" });
+    else Object.assign(w.style, { left: 24 + k * 26 + "px", top: MENU_H + 22 + k * 22 + "px" });
+  });
+  $$(".dicon").forEach(n => delete n.dataset.moved);
+  layoutDesktop();
+}
+
+/* ---------------- 1-bit photo (Atkinson dithering) ---------------- */
+function ditherPhoto(src, box) {
+  const img = new Image();
+  img.onload = () => {
+    const S = 130, cv = document.createElement("canvas"); cv.width = cv.height = S;
+    const g = cv.getContext("2d");
+    const s = Math.min(img.width, img.height);
+    g.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, S, S);
+    try {
+      const id = g.getImageData(0, 0, S, S), p = id.data, L = new Float32Array(S * S);
+      for (let i = 0; i < S * S; i++) L[i] = 0.299 * p[i * 4] + 0.587 * p[i * 4 + 1] + 0.114 * p[i * 4 + 2];
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+        const i = y * S + x, o = L[i], n = o < 128 ? 0 : 255, err = (o - n) / 8;
+        L[i] = n;
+        [[1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [0, 2]].forEach(([dx, dy]) => {
+          const xx = x + dx, yy = y + dy;
+          if (xx >= 0 && xx < S && yy < S) L[yy * S + xx] += err;
+        });
+      }
+      for (let i = 0; i < S * S; i++) { p[i * 4] = p[i * 4 + 1] = p[i * 4 + 2] = L[i]; p[i * 4 + 3] = 255; }
+      g.putImageData(id, 0, 0);
+      box.replaceChildren(cv);
+    } catch { // cross-origin image: fall back to plain grayscale
+      img.style.filter = "grayscale(1) contrast(1.4)";
+      box.replaceChildren(img);
+    }
+  };
+  img.src = src;
+}
+
+/* ---------------- boot ---------------- */
+function boot() {
+  const b = el("div", "", svgIcon("mac", 64));
+  b.id = "boot";
+  SCREEN.append(b);
+  let done = false;
+  const finish = () => {
+    if (done) return; done = true;
+    b.remove();
+    openWindow("hd");
+    setTimeout(() => openWindow("about", $('#desktop [data-item="hd"]')), 120);
+  };
+  b.addEventListener("pointerdown", finish);
+  setTimeout(() => { if (!done) b.innerHTML = `<div class="welcome">Welcome to Macintosh.</div>`; }, reduced ? 200 : 700);
+  setTimeout(finish, reduced ? 600 : 1700);
+}
+
+addEventListener("resize", () => {
+  applyScale();
+  layoutDesktop();
+  $$(".win").forEach(w => {
+    const r = rectOf(w);
+    if (r.left > SW() - 40) w.style.left = Math.max(4, SW() - r.width - 8) + "px";
+    if (r.top > SH() - 24) w.style.top = Math.max(MENU_H, SH() - r.height - 8) + "px";
+    if (isSmall() && r.width > SW() - 8) { w.style.left = "6px"; w.style.width = SW() - 14 + "px"; }
+  });
+});
+
+installCursors();
+cursorsReady = true;
+buildMenubar();
+buildDesktop();
+boot();
+</script>
+</body>
+</html>
