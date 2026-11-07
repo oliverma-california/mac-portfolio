@@ -508,8 +508,8 @@ const WINDOWS = {
     title: "Experience", type: "doc", w: 560, h: 460,
     html: () => `<h1>Experience</h1>` + DATA.experience.map(j => `
       <div class="job">
-        <div class="job-top"><h3>${esc(j.role)}${j.current ? `<span class="now">NOW</span>` : ""}</h3><span class="meta">${esc(j.dates)}</span></div>
-        <div class="meta">${esc(j.org)}${j.location ? " · " + esc(j.location) : ""}</div>
+        <div class="job-top"><h3>${esc(j.org)}${j.current ? `<span class="now">NOW</span>` : ""}</h3><span class="meta">${esc(j.dates)}</span></div>
+        <div class="meta">${esc(j.role)}${j.location ? " · " + esc(j.location) : ""}</div>
         ${j.bullets?.length ? `<ul>${j.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
       </div>`).join(""),
   },
