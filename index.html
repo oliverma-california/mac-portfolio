@@ -13,7 +13,6 @@
 @font-face{font-family:"Chicago 12";src:url("fonts/ChiKareGo2.woff2") format("woff2"),url("fonts/ChiKareGo2.woff") format("woff");font-display:block}
 @font-face{font-family:"Geneva 9";src:url("fonts/FindersKeepers.woff2") format("woff2"),url("fonts/FindersKeepers.woff") format("woff");font-display:block}
 :root{
-  --checker:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'><rect x='0' y='0' width='1' height='1' fill='black'/><rect x='2' y='0' width='1' height='1' fill='black'/><rect x='1' y='1' width='1' height='1' fill='black'/><rect x='3' y='1' width='1' height='1' fill='black'/><rect x='0' y='2' width='1' height='1' fill='black'/><rect x='2' y='2' width='1' height='1' fill='black'/><rect x='1' y='3' width='1' height='1' fill='black'/><rect x='3' y='3' width='1' height='1' fill='black'/></svg>");
   --chrome:"Chicago 12",monospace;
   --text:"Geneva 9",monospace;
   --g:16px;--g13:13px;--g15:15px; /* Geneva 9 size and line heights */
@@ -39,10 +38,7 @@ a,button,.btn,[data-href]{cursor:var(--cur-hand,pointer)}
 button{font:inherit;color:inherit}
 
 /* rounded CRT corners */
-/* the CRT's rounded screen corners, drawn in Mac pixels */
-.scorner{position:absolute;width:5px;height:5px;z-index:99999;pointer-events:none;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5' shape-rendering='crispEdges'><rect x='0' y='0' width='5' height='1' fill='black'/><rect x='0' y='1' width='3' height='1' fill='black'/><rect x='0' y='2' width='2' height='1' fill='black'/><rect x='0' y='3' width='1' height='1' fill='black'/><rect x='0' y='4' width='1' height='1' fill='black'/></svg>")}
-.scorner.tr{right:0;top:0;transform:scaleX(-1)}.scorner.tl{left:0;top:0}
-.scorner.bl{left:0;bottom:0;transform:scaleY(-1)}.scorner.br{right:0;bottom:0;transform:scale(-1,-1)}
+#corners{position:fixed;inset:0;border-radius:9px;box-shadow:0 0 0 30px #000;pointer-events:none;z-index:99999}
 
 /* ---------- menu bar ---------- */
 #menubar{position:fixed;top:0;left:0;right:0;height:21px;background:#fff;border-bottom:1px solid #000;display:flex;align-items:stretch;padding-left:8px;z-index:5000;white-space:nowrap;overflow:hidden}
@@ -57,7 +53,7 @@ button{font:inherit;color:inherit}
 .mi .key{margin-left:28px;font-family:var(--chrome)}
 .mi.on{background:#000;color:#fff}
 .mi.dis{color:transparent;background-image:var(--dither);background-size:2px 2px;-webkit-background-clip:text;background-clip:text}
-.sep{height:1px;margin:3px 0;background:var(--dither);background-size:2px 2px}
+.sep{border-top:1px dotted #000;margin:3px 0}
 
 /* ---------- icons ---------- */
 .f{fill:var(--f,#fff)}
@@ -65,13 +61,11 @@ button{font:inherit;color:inherit}
 .opened{--f:url(#dither)}
 [data-item]{outline:none}
 .icon{display:flex;flex-direction:column;align-items:center;width:120px;gap:3px;padding:2px}
-/* icons keep their exact pixel size; flex layouts must never squeeze them */
-.icn{display:block;flex:none;max-width:none}
 .icon svg{display:block}
 .icon .label{font-family:var(--text);font-size:var(--g);line-height:var(--g13);padding:0 3px;background:#fff;text-align:center;max-width:120px;overflow-wrap:break-word}
 .icon.sel svg{filter:invert(1)}
 .icon.sel .label{background:#000;color:#fff}
-.icon:focus-visible .label{outline:1px solid #000;outline-offset:1px}
+.icon:focus-visible .label{outline:1px dotted #000;outline-offset:1px}
 .dicon{position:fixed;z-index:2;touch-action:none}
 
 /* ---------- windows ---------- */
@@ -79,14 +73,11 @@ button{font:inherit;color:inherit}
 .titlebar{position:relative;height:19px;flex:none;border-bottom:1px solid #000;display:flex;align-items:flex-start;justify-content:center;touch-action:none}
 .win.active .titlebar::before{content:"";position:absolute;left:1px;right:1px;top:3px;bottom:3px;background:repeating-linear-gradient(to bottom,#000 0 1px,#fff 1px 2px)}
 .titlebar .title{position:relative;background:#fff;padding:0 8px;line-height:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 70px)}
-/* 11×11 boxes spanning the six title stripes, as in System 6 */
-.closebox,.zoombox{position:absolute;top:3px;width:11px;height:11px;padding:0;border:1px solid #000;background:#fff;box-shadow:0 0 0 1px #fff;display:none;cursor:var(--cur-arrow,default)}
+.closebox,.zoombox{position:absolute;top:3px;width:13px;height:13px;padding:0;border:1px solid #000;background:#fff;box-shadow:0 0 0 1px #fff;display:none;cursor:var(--cur-arrow,default)}
 .closebox{left:8px}
 .zoombox{right:8px}
-.zoombox::after{content:"";position:absolute;left:0;top:0;width:5px;height:5px;border-right:1px solid #000;border-bottom:1px solid #000}
-/* pressed: the classic starburst */
-.closebox:active,.zoombox:active{background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9' shape-rendering='crispEdges'><rect x='4' y='0' width='1' height='1'/><rect x='1' y='1' width='1' height='1'/><rect x='4' y='1' width='1' height='1'/><rect x='7' y='1' width='1' height='1'/><rect x='2' y='2' width='1' height='1'/><rect x='4' y='2' width='1' height='1'/><rect x='6' y='2' width='1' height='1'/><rect x='0' y='4' width='1' height='1'/><rect x='1' y='4' width='1' height='1'/><rect x='2' y='4' width='1' height='1'/><rect x='6' y='4' width='1' height='1'/><rect x='7' y='4' width='1' height='1'/><rect x='8' y='4' width='1' height='1'/><rect x='2' y='6' width='1' height='1'/><rect x='4' y='6' width='1' height='1'/><rect x='6' y='6' width='1' height='1'/><rect x='1' y='7' width='1' height='1'/><rect x='4' y='7' width='1' height='1'/><rect x='7' y='7' width='1' height='1'/><rect x='4' y='8' width='1' height='1'/></svg>") no-repeat 0 0/9px 9px}
-.zoombox:active::after{display:none}
+.zoombox::after{content:"";position:absolute;left:0;top:0;width:6px;height:6px;border-right:1px solid #000;border-bottom:1px solid #000}
+.closebox:active,.zoombox:active{background:#000}
 .win.active .closebox,.win.active .zoombox{display:block}
 .infobar{flex:none;display:flex;justify-content:space-between;gap:12px;padding:2px 10px 1px;font-family:var(--text);font-size:var(--g);line-height:var(--g15);border-bottom:3px double #000;white-space:nowrap;overflow:hidden}
 .content{flex:1;overflow:scroll;position:relative;background:#fff}
@@ -107,10 +98,10 @@ button{font:inherit;color:inherit}
 .content::-webkit-scrollbar-button:vertical:end:increment,
 .content::-webkit-scrollbar-button:horizontal:start:decrement,
 .content::-webkit-scrollbar-button:horizontal:end:increment{display:block}
-.content::-webkit-scrollbar-button:vertical:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><rect x='0' y='0' width='1' height='1' fill='black'/><rect x='0' y='1' width='1' height='1' fill='black'/><rect x='8' y='1' width='1' height='1' fill='black'/><rect x='0' y='2' width='1' height='1' fill='black'/><rect x='7' y='2' width='1' height='1' fill='black'/><rect x='8' y='2' width='1' height='1' fill='white'/><rect x='9' y='2' width='1' height='1' fill='black'/><rect x='0' y='3' width='1' height='1' fill='black'/><rect x='6' y='3' width='1' height='1' fill='black'/><rect x='7' y='3' width='3' height='1' fill='white'/><rect x='10' y='3' width='1' height='1' fill='black'/><rect x='0' y='4' width='1' height='1' fill='black'/><rect x='5' y='4' width='1' height='1' fill='black'/><rect x='6' y='4' width='5' height='1' fill='white'/><rect x='11' y='4' width='1' height='1' fill='black'/><rect x='0' y='5' width='1' height='1' fill='black'/><rect x='4' y='5' width='1' height='1' fill='black'/><rect x='5' y='5' width='7' height='1' fill='white'/><rect x='12' y='5' width='1' height='1' fill='black'/><rect x='0' y='6' width='1' height='1' fill='black'/><rect x='3' y='6' width='1' height='1' fill='black'/><rect x='4' y='6' width='9' height='1' fill='white'/><rect x='13' y='6' width='1' height='1' fill='black'/><rect x='0' y='7' width='1' height='1' fill='black'/><rect x='2' y='7' width='5' height='1' fill='black'/><rect x='7' y='7' width='3' height='1' fill='white'/><rect x='10' y='7' width='5' height='1' fill='black'/><rect x='0' y='8' width='1' height='1' fill='black'/><rect x='6' y='8' width='1' height='1' fill='black'/><rect x='7' y='8' width='3' height='1' fill='white'/><rect x='10' y='8' width='1' height='1' fill='black'/><rect x='0' y='9' width='1' height='1' fill='black'/><rect x='6' y='9' width='1' height='1' fill='black'/><rect x='7' y='9' width='3' height='1' fill='white'/><rect x='10' y='9' width='1' height='1' fill='black'/><rect x='0' y='10' width='1' height='1' fill='black'/><rect x='6' y='10' width='1' height='1' fill='black'/><rect x='7' y='10' width='3' height='1' fill='white'/><rect x='10' y='10' width='1' height='1' fill='black'/><rect x='0' y='11' width='1' height='1' fill='black'/><rect x='6' y='11' width='1' height='1' fill='black'/><rect x='7' y='11' width='3' height='1' fill='white'/><rect x='10' y='11' width='1' height='1' fill='black'/><rect x='0' y='12' width='1' height='1' fill='black'/><rect x='6' y='12' width='5' height='1' fill='black'/><rect x='0' y='13' width='1' height='1' fill='black'/><rect x='0' y='14' width='1' height='1' fill='black'/><rect x='0' y='15' width='16' height='1' fill='black'/></svg>")}
-.content::-webkit-scrollbar-button:vertical:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><rect x='0' y='0' width='16' height='1' fill='black'/><rect x='0' y='1' width='1' height='1' fill='black'/><rect x='0' y='2' width='1' height='1' fill='black'/><rect x='0' y='3' width='1' height='1' fill='black'/><rect x='6' y='3' width='5' height='1' fill='black'/><rect x='0' y='4' width='1' height='1' fill='black'/><rect x='6' y='4' width='1' height='1' fill='black'/><rect x='7' y='4' width='3' height='1' fill='white'/><rect x='10' y='4' width='1' height='1' fill='black'/><rect x='0' y='5' width='1' height='1' fill='black'/><rect x='6' y='5' width='1' height='1' fill='black'/><rect x='7' y='5' width='3' height='1' fill='white'/><rect x='10' y='5' width='1' height='1' fill='black'/><rect x='0' y='6' width='1' height='1' fill='black'/><rect x='6' y='6' width='1' height='1' fill='black'/><rect x='7' y='6' width='3' height='1' fill='white'/><rect x='10' y='6' width='1' height='1' fill='black'/><rect x='0' y='7' width='1' height='1' fill='black'/><rect x='6' y='7' width='1' height='1' fill='black'/><rect x='7' y='7' width='3' height='1' fill='white'/><rect x='10' y='7' width='1' height='1' fill='black'/><rect x='0' y='8' width='1' height='1' fill='black'/><rect x='2' y='8' width='5' height='1' fill='black'/><rect x='7' y='8' width='3' height='1' fill='white'/><rect x='10' y='8' width='5' height='1' fill='black'/><rect x='0' y='9' width='1' height='1' fill='black'/><rect x='3' y='9' width='1' height='1' fill='black'/><rect x='4' y='9' width='9' height='1' fill='white'/><rect x='13' y='9' width='1' height='1' fill='black'/><rect x='0' y='10' width='1' height='1' fill='black'/><rect x='4' y='10' width='1' height='1' fill='black'/><rect x='5' y='10' width='7' height='1' fill='white'/><rect x='12' y='10' width='1' height='1' fill='black'/><rect x='0' y='11' width='1' height='1' fill='black'/><rect x='5' y='11' width='1' height='1' fill='black'/><rect x='6' y='11' width='5' height='1' fill='white'/><rect x='11' y='11' width='1' height='1' fill='black'/><rect x='0' y='12' width='1' height='1' fill='black'/><rect x='6' y='12' width='1' height='1' fill='black'/><rect x='7' y='12' width='3' height='1' fill='white'/><rect x='10' y='12' width='1' height='1' fill='black'/><rect x='0' y='13' width='1' height='1' fill='black'/><rect x='7' y='13' width='1' height='1' fill='black'/><rect x='8' y='13' width='1' height='1' fill='white'/><rect x='9' y='13' width='1' height='1' fill='black'/><rect x='0' y='14' width='1' height='1' fill='black'/><rect x='8' y='14' width='1' height='1' fill='black'/><rect x='0' y='15' width='1' height='1' fill='black'/></svg>")}
-.content::-webkit-scrollbar-button:horizontal:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><rect x='0' y='0' width='16' height='1' fill='black'/><rect x='15' y='1' width='1' height='1' fill='black'/><rect x='7' y='2' width='1' height='1' fill='black'/><rect x='15' y='2' width='1' height='1' fill='black'/><rect x='6' y='3' width='2' height='1' fill='black'/><rect x='15' y='3' width='1' height='1' fill='black'/><rect x='5' y='4' width='1' height='1' fill='black'/><rect x='6' y='4' width='1' height='1' fill='white'/><rect x='7' y='4' width='1' height='1' fill='black'/><rect x='15' y='4' width='1' height='1' fill='black'/><rect x='4' y='5' width='1' height='1' fill='black'/><rect x='5' y='5' width='2' height='1' fill='white'/><rect x='7' y='5' width='1' height='1' fill='black'/><rect x='15' y='5' width='1' height='1' fill='black'/><rect x='3' y='6' width='1' height='1' fill='black'/><rect x='4' y='6' width='3' height='1' fill='white'/><rect x='7' y='6' width='6' height='1' fill='black'/><rect x='15' y='6' width='1' height='1' fill='black'/><rect x='2' y='7' width='1' height='1' fill='black'/><rect x='3' y='7' width='9' height='1' fill='white'/><rect x='12' y='7' width='1' height='1' fill='black'/><rect x='15' y='7' width='1' height='1' fill='black'/><rect x='1' y='8' width='1' height='1' fill='black'/><rect x='2' y='8' width='10' height='1' fill='white'/><rect x='12' y='8' width='1' height='1' fill='black'/><rect x='15' y='8' width='1' height='1' fill='black'/><rect x='2' y='9' width='1' height='1' fill='black'/><rect x='3' y='9' width='9' height='1' fill='white'/><rect x='12' y='9' width='1' height='1' fill='black'/><rect x='15' y='9' width='1' height='1' fill='black'/><rect x='3' y='10' width='1' height='1' fill='black'/><rect x='4' y='10' width='3' height='1' fill='white'/><rect x='7' y='10' width='6' height='1' fill='black'/><rect x='15' y='10' width='1' height='1' fill='black'/><rect x='4' y='11' width='1' height='1' fill='black'/><rect x='5' y='11' width='2' height='1' fill='white'/><rect x='7' y='11' width='1' height='1' fill='black'/><rect x='15' y='11' width='1' height='1' fill='black'/><rect x='5' y='12' width='1' height='1' fill='black'/><rect x='6' y='12' width='1' height='1' fill='white'/><rect x='7' y='12' width='1' height='1' fill='black'/><rect x='15' y='12' width='1' height='1' fill='black'/><rect x='6' y='13' width='2' height='1' fill='black'/><rect x='15' y='13' width='1' height='1' fill='black'/><rect x='7' y='14' width='1' height='1' fill='black'/><rect x='15' y='14' width='1' height='1' fill='black'/><rect x='15' y='15' width='1' height='1' fill='black'/></svg>")}
-.content::-webkit-scrollbar-button:horizontal:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><rect x='0' y='0' width='16' height='1' fill='black'/><rect x='0' y='1' width='1' height='1' fill='black'/><rect x='0' y='2' width='1' height='1' fill='black'/><rect x='8' y='2' width='1' height='1' fill='black'/><rect x='0' y='3' width='1' height='1' fill='black'/><rect x='8' y='3' width='2' height='1' fill='black'/><rect x='0' y='4' width='1' height='1' fill='black'/><rect x='8' y='4' width='1' height='1' fill='black'/><rect x='9' y='4' width='1' height='1' fill='white'/><rect x='10' y='4' width='1' height='1' fill='black'/><rect x='0' y='5' width='1' height='1' fill='black'/><rect x='8' y='5' width='1' height='1' fill='black'/><rect x='9' y='5' width='2' height='1' fill='white'/><rect x='11' y='5' width='1' height='1' fill='black'/><rect x='0' y='6' width='1' height='1' fill='black'/><rect x='3' y='6' width='6' height='1' fill='black'/><rect x='9' y='6' width='3' height='1' fill='white'/><rect x='12' y='6' width='1' height='1' fill='black'/><rect x='0' y='7' width='1' height='1' fill='black'/><rect x='3' y='7' width='1' height='1' fill='black'/><rect x='4' y='7' width='9' height='1' fill='white'/><rect x='13' y='7' width='1' height='1' fill='black'/><rect x='0' y='8' width='1' height='1' fill='black'/><rect x='3' y='8' width='1' height='1' fill='black'/><rect x='4' y='8' width='10' height='1' fill='white'/><rect x='14' y='8' width='1' height='1' fill='black'/><rect x='0' y='9' width='1' height='1' fill='black'/><rect x='3' y='9' width='1' height='1' fill='black'/><rect x='4' y='9' width='9' height='1' fill='white'/><rect x='13' y='9' width='1' height='1' fill='black'/><rect x='0' y='10' width='1' height='1' fill='black'/><rect x='3' y='10' width='6' height='1' fill='black'/><rect x='9' y='10' width='3' height='1' fill='white'/><rect x='12' y='10' width='1' height='1' fill='black'/><rect x='0' y='11' width='1' height='1' fill='black'/><rect x='8' y='11' width='1' height='1' fill='black'/><rect x='9' y='11' width='2' height='1' fill='white'/><rect x='11' y='11' width='1' height='1' fill='black'/><rect x='0' y='12' width='1' height='1' fill='black'/><rect x='8' y='12' width='1' height='1' fill='black'/><rect x='9' y='12' width='1' height='1' fill='white'/><rect x='10' y='12' width='1' height='1' fill='black'/><rect x='0' y='13' width='1' height='1' fill='black'/><rect x='8' y='13' width='2' height='1' fill='black'/><rect x='0' y='14' width='1' height='1' fill='black'/><rect x='8' y='14' width='1' height='1' fill='black'/><rect x='0' y='15' width='1' height='1' fill='black'/></svg>")}
+.content::-webkit-scrollbar-button:vertical:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0.5 0V16M0 15.5H16' stroke='black'/><path d='M8.5 3.5L14.5 9.5H11.5V12.5H5.5V9.5H2.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:vertical:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0.5 0V16M0 0.5H16' stroke='black'/><path d='M8.5 12.5L14.5 6.5H11.5V3.5H5.5V6.5H2.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:horizontal:start:decrement{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0 0.5H16M15.5 0V16' stroke='black'/><path d='M3.5 8.5L9.5 2.5V5.5H12.5V11.5H9.5V14.5Z' fill='white' stroke='black'/></svg>")}
+.content::-webkit-scrollbar-button:horizontal:end:increment{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'><path d='M0 0.5H16M0.5 0V16' stroke='black'/><path d='M12.5 8.5L6.5 2.5V5.5H3.5V11.5H6.5V14.5Z' fill='white' stroke='black'/></svg>")}
 .win:not(.active) .content::-webkit-scrollbar-track{background:#fff}
 .win:not(.active) .content::-webkit-scrollbar-thumb{background:transparent;border-color:transparent}
 .win:not(.active) .content::-webkit-scrollbar-button{background-image:none!important}
@@ -138,23 +129,22 @@ table.list tr.sel svg{filter:invert(1)}
 .docbody a{color:#000}
 .docbody a:hover{background:#000;color:#fff}
 .meta{font-family:var(--text);font-size:var(--g);line-height:var(--g15)}
-hr.dots{border:0;height:1px;margin:14px 0;background:var(--dither);background-size:2px 2px}
+hr.dots{border:0;border-top:1px dotted #000;margin:14px 0}
 .btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;align-items:center}
-.btn{display:inline-block;font-family:var(--chrome);font-size:16px;font-weight:normal;line-height:17px;position:relative;border:1px solid transparent;border-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9' shape-rendering='crispEdges'><rect x='3' y='0' width='3' height='1' fill='black'/><rect x='1' y='1' width='2' height='1' fill='black'/><rect x='3' y='1' width='3' height='1' fill='white'/><rect x='6' y='1' width='2' height='1' fill='black'/><rect x='1' y='2' width='1' height='1' fill='black'/><rect x='2' y='2' width='5' height='1' fill='white'/><rect x='7' y='2' width='1' height='1' fill='black'/><rect x='0' y='3' width='1' height='1' fill='black'/><rect x='1' y='3' width='7' height='1' fill='white'/><rect x='8' y='3' width='1' height='1' fill='black'/><rect x='0' y='4' width='1' height='1' fill='black'/><rect x='1' y='4' width='7' height='1' fill='white'/><rect x='8' y='4' width='1' height='1' fill='black'/><rect x='0' y='5' width='1' height='1' fill='black'/><rect x='1' y='5' width='7' height='1' fill='white'/><rect x='8' y='5' width='1' height='1' fill='black'/><rect x='1' y='6' width='1' height='1' fill='black'/><rect x='2' y='6' width='5' height='1' fill='white'/><rect x='7' y='6' width='1' height='1' fill='black'/><rect x='1' y='7' width='2' height='1' fill='black'/><rect x='3' y='7' width='3' height='1' fill='white'/><rect x='6' y='7' width='2' height='1' fill='black'/><rect x='3' y='8' width='3' height='1' fill='black'/></svg>") 4 fill / 4px stretch;padding:1px 16px;background:none;color:#000!important;text-decoration:none;user-select:none}
-.btn:hover{background:none!important}
-.btn:active{background:none!important;color:#fff!important;border-image-source:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9' shape-rendering='crispEdges'><rect x='3' y='0' width='3' height='1' fill='black'/><rect x='1' y='1' width='7' height='1' fill='black'/><rect x='1' y='2' width='7' height='1' fill='black'/><rect x='0' y='3' width='9' height='1' fill='black'/><rect x='0' y='4' width='9' height='1' fill='black'/><rect x='0' y='5' width='9' height='1' fill='black'/><rect x='1' y='6' width='7' height='1' fill='black'/><rect x='1' y='7' width='7' height='1' fill='black'/><rect x='3' y='8' width='3' height='1' fill='black'/></svg>")}
-.btn.default{margin:5px}
-.btn.default::before{content:"";position:absolute;inset:-5px;pointer-events:none;border:6px solid transparent;border-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' shape-rendering='crispEdges'><rect x='5' y='0' width='3' height='1' fill='black'/><rect x='3' y='1' width='7' height='1' fill='black'/><rect x='2' y='2' width='9' height='1' fill='black'/><rect x='1' y='3' width='5' height='1' fill='black'/><rect x='7' y='3' width='5' height='1' fill='black'/><rect x='1' y='4' width='3' height='1' fill='black'/><rect x='9' y='4' width='3' height='1' fill='black'/><rect x='0' y='5' width='4' height='1' fill='black'/><rect x='9' y='5' width='4' height='1' fill='black'/><rect x='0' y='6' width='3' height='1' fill='black'/><rect x='10' y='6' width='3' height='1' fill='black'/><rect x='0' y='7' width='4' height='1' fill='black'/><rect x='9' y='7' width='4' height='1' fill='black'/><rect x='1' y='8' width='3' height='1' fill='black'/><rect x='9' y='8' width='3' height='1' fill='black'/><rect x='1' y='9' width='5' height='1' fill='black'/><rect x='7' y='9' width='5' height='1' fill='black'/><rect x='2' y='10' width='9' height='1' fill='black'/><rect x='3' y='11' width='7' height='1' fill='black'/><rect x='5' y='12' width='3' height='1' fill='black'/></svg>") 6 / 6px stretch}
+.btn{display:inline-block;font-family:var(--chrome);font-size:16px;font-weight:normal;line-height:17px;border:1px solid #000;border-radius:8px;padding:1px 16px;background:#fff;color:#000!important;text-decoration:none;user-select:none}
+.btn:hover{background:#fff!important}
+.btn:active{background:#000!important;color:#fff!important}
+.btn.default{box-shadow:0 0 0 2px #fff,0 0 0 5px #000;border-radius:8px;margin:5px}
 
 .about-head{display:flex;gap:18px;align-items:center}
 .photo{flex:none;width:132px;height:132px;border:1px solid #000;box-shadow:2px 2px 0 #000;display:grid;place-items:center;background:#fff}
 .photo canvas,.photo img{width:130px;height:130px;display:block;image-rendering:pixelated}
 .tagline{font-family:var(--chrome);font-size:16px;line-height:17px;margin:0}
-.job{padding:12px 0;border-bottom:1px solid transparent;border-image:var(--checker) 1 repeat}
+.job{padding:12px 0;border-bottom:1px dotted #000}
 .job:last-child{border-bottom:0}
 .job-top{display:flex;justify-content:space-between;align-items:baseline;gap:4px 14px;flex-wrap:wrap}
 .now{display:inline-block;font-family:var(--text);font-size:var(--g);line-height:var(--g13);background:#000;color:#fff;padding:0 4px;margin-left:6px;vertical-align:1px}
-.pub{padding:10px 0;border-bottom:1px solid transparent;border-image:var(--checker) 1 repeat}
+.pub{padding:10px 0;border-bottom:1px dotted #000}
 .pub:last-child{border-bottom:0}
 .pub .ptitle{font-family:var(--chrome);font-size:16px;line-height:17px;margin-bottom:2px}
 .award{display:flex;gap:6px;align-items:flex-start}
@@ -177,8 +167,8 @@ hr.dots{border:0;height:1px;margin:14px 0;background:var(--dither);background-si
 .dialog .btnrow{justify-content:flex-end;margin-top:18px}
 
 /* effects */
-.ghost{position:fixed;z-index:9000;pointer-events:none;border:1px solid transparent;border-image:var(--checker) 1 repeat}
-.zoomrect{position:fixed;z-index:9000;pointer-events:none;border:1px solid transparent;border-image:var(--checker) 1 repeat}
+.ghost{position:fixed;z-index:9000;pointer-events:none;border:1px dotted #000}
+.zoomrect{position:fixed;z-index:9000;pointer-events:none;border:1px dotted #000}
 
 /* boot */
 #boot{position:fixed;inset:0;z-index:20000;background:#fff var(--dither);background-size:2px 2px;display:grid;place-items:center}
@@ -207,8 +197,8 @@ hr.dots{border:0;height:1px;margin:14px 0;background:var(--dither);background-si
 <div id="screen">
   <div id="menubar" role="menubar"></div>
   <div id="desktop"></div>
-  <div class="scorner tl"></div><div class="scorner tr"></div><div class="scorner bl"></div><div class="scorner br"></div>
 </div>
+<div id="corners"></div>
 
 <noscript>
   <div style="position:fixed;inset:40px;background:#fff;border:1px solid #000;padding:20px;font-family:Geneva,Arial,sans-serif;z-index:3">
@@ -346,13 +336,6 @@ const DATA = {
       link: "https://medium.com/data-science/the-comprehensive-guide-to-training-and-running-yolov8-models-on-custom-datasets-22946da259c3",
     },
   ],
-  // Newest first. `org` is optional.
-  awards: [
-    { title: "Guts++ Competition — 2nd Place", org: "Jane Street", date: "October 2026" },
-    { title: "Citadel | Citadel Securities Trading Challenge — Winner", org: "Citadel | Citadel Securities", date: "September 2026" },
-    { title: "National Merit Finalist", org: "National Merit Scholarship Corporation", date: "February 2025" },
-    { title: "U.S. Presidential Scholars Program Candidate", org: "U.S. Presidential Scholars Program", date: "January 2025" },
-  ],
 };
 /* ===================================================================== */
 
@@ -438,675 +421,22 @@ function installCursors() {
 
 /* ---------------- icons (32×32, 1-bit) ---------------- */
 const ICON = {
-  trophy: [
-    "................................",
-    "................................",
-    "................................",
-    "........XXXXXXXXXXXXXXXX........",
-    "........XooooooooooooooX........",
-    "....XXXXXooooooooooooooXXXXX....",
-    "....XoooXooooooooooooooXoooX....",
-    "....XoooXooooooXXooooooXoooX....",
-    "....XoooXooooXXXXXXooooXoooX....",
-    "....XoooXoooooXXXXoooooXoooX....",
-    ".....XooXoooooXooXoooooXooX.....",
-    "......XoXooooooooooooooXoX......",
-    ".......XXooooooooooooooXX.......",
-    ".........XooooooooooooX.........",
-    "..........XooooooooooX..........",
-    "...........XooooooooX...........",
-    "............XooooooX............",
-    ".............XXXXXX.............",
-    "...............XX...............",
-    "...............XX...............",
-    "...............XX...............",
-    "...............XX...............",
-    "...........XXXXXXXXXX...........",
-    "...........XooooooooX...........",
-    ".........XXXXXXXXXXXXXX.........",
-    ".........XooooooooooooX.........",
-    ".........XooooooooooooX.........",
-    ".........XooooooooooooX.........",
-    ".........XXXXXXXXXXXXXX.........",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  folder: [
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "...XXXXXXXX.....................",
-    "..XooooooooX....................",
-    ".XooooooooooXXXXXXXXXXXXXXXXXXX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  doc: [
-    "................................",
-    "......XXXXXXXXXXXXXX............",
-    "......XooooooooooooXX...........",
-    "......XooooooooooooXoX..........",
-    "......XooooooooooooXooX.........",
-    "......XooooooooooooXoooX........",
-    "......XooooooooooooXooooX.......",
-    "......XooooooooooooXXXXXXX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXoooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XXXXXXXXXXXXXXXXXXXX......",
-    "................................",
-  ],
-  resume: [
-    "................................",
-    "......XXXXXXXXXXXXXX............",
-    "......XooooooooooooXX...........",
-    "......XooXXXXXXXXooXoX..........",
-    "......XooXooooooXooXooX.........",
-    "......XooXooXXooXooXoooX........",
-    "......XooXoXXXXoXooXooooX.......",
-    "......XooXooXXooXooXXXXXXX......",
-    "......XooXooooooXooooooooX......",
-    "......XooXoXXXXoXooooooooX......",
-    "......XooXXXXXXXXooooooooX......",
-    "......XooXXXXXXXXooooooooX......",
-    "......XooXXXXXXXXooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXXXXXXooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooXXXXXXXXXoooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XooooooooooooooooooX......",
-    "......XXXXXXXXXXXXXXXXXXXX......",
-    "................................",
-  ],
-  mac: [
-    ".....XXXXXXXXXXXXXXXXXXXXX......",
-    "....XoooooooooooooooooooooX.....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooXXXXXXXXXXXXXXXXXoooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XooXooooXoooXoooXooooXooX....",
-    "...XooXooooXoooXoooXooooXooX....",
-    "...XooXooooooooXooooooooXooX....",
-    "...XooXooooooooXooooooooXooX....",
-    "...XooXoooooooXXooooooooXooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XooXoooooXooooXooooooXooX....",
-    "...XooXooooooXXXXoooooooXooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XooXoooooooooooooooooXooX....",
-    "...XoooXXXXXXXXXXXXXXXXXoooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XooXXooooooooooXXXXXXoooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "...XoooooooooooooooooooooooX....",
-    "....XXXXXXXXXXXXXXXXXXXXXXX.....",
-    "....XoooooooooooooooooooooX.....",
-    "....XoooooooooooooooooooooX.....",
-    "....XoooooooooooooooooooooX.....",
-    "....XXXXXXXXXXXXXXXXXXXXXXX.....",
-  ],
-  hd: [
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    ".XooXXXoooooooooooooooooooooooX.",
-    ".XooXXXoooooooooooooooooooooooX.",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  trash: [
-    "................................",
-    "................................",
-    "............XXXXXXXX............",
-    "............XooooooX............",
-    ".....XXXXXXXXXXXXXXXXXXXXXX.....",
-    ".....XooooooooooooooooooooX.....",
-    ".....XooooooooooooooooooooX.....",
-    ".....XXXXXXXXXXXXXXXXXXXXXX.....",
-    ".......XooooooooooooooooX.......",
-    ".......XooooooooooooooooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XoooXooXooXooXoooX.......",
-    ".......XooooooooooooooooX.......",
-    ".......XooooooooooooooooX.......",
-    ".......XXXXXXXXXXXXXXXXXX.......",
-    "................................",
-  ],
-  letter: [
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    ".XXXooooooooooooooooooooooooXXX.",
-    ".XooXooooooooooooooooooooooXooX.",
-    ".XoooXooooooooooooooooooooXoooX.",
-    ".XooooXXooooooooooooooooXXooooX.",
-    ".XooooooXooooooooooooooXooooooX.",
-    ".XoooooooXXooooooooooXXoooooooX.",
-    ".XoooooooooXooooooooXoooooooooX.",
-    ".XooooooooooXooooooXooooooooooX.",
-    ".XoooooooooooXXooXXoooooooooooX.",
-    ".XoooooooooooooXXoooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XooooooooooooooooooooooooooooX.",
-    ".XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  news: [
-    "................................",
-    "................................",
-    "....XXXXXXXXXXXXXXXXXXXXXXXX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXoooooooooooX....",
-    "....XooXoooooooXoXXXXXXXXooX....",
-    "....XooXoooooooXoooooooooooX....",
-    "....XooXoooooooXoXXXXXXXXooX....",
-    "....XooXoooooooXoooooooooooX....",
-    "....XooXoooooooXoXXXXXXXXooX....",
-    "....XooXoooooooXoooooooooooX....",
-    "....XooXXXXXXXXXoXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XooXXXXXXXXXXXXXXXXXXooX....",
-    "....XooooooooooooooooooooooX....",
-    "....XXXXXXXXXXXXXXXXXXXXXXXX....",
-    "................................",
-    "................................",
-  ],
-  app: [
-    "................................",
-    "................X...............",
-    "...............XoX..............",
-    "..............XoooX.............",
-    ".............XoooooX............",
-    "............XoooooooX...........",
-    "...........XoooooooooX..........",
-    "..........XoooooooooooX.........",
-    ".........XoooooooooooooX........",
-    "........XoooooooooooooooX.......",
-    ".......XoooXXXXXXXXXXXoooX......",
-    "......XooooXoooooooooXooooX.....",
-    ".....XoooooXoXXXXXXXoXoooooX....",
-    "....XooooooXoooooooooXooooooX...",
-    "...XoooooooXoXXXXXXXoXoooooooX..",
-    "..XooooooooXoooooooooXooooooooX.",
-    "...XoooooooXoXXXXXXXoXoooooooX..",
-    "....XooooooXoooooooooXooooooX...",
-    ".....XoooooXoXXXXXoooXoooooX....",
-    "......XooooXoooooooooXooooX.....",
-    ".......XoooXXXXXXXXXXXoooX......",
-    "........XoooooooooooooooX.......",
-    ".........XoooooooooooooX........",
-    "..........XoooooooooooX.........",
-    "...........XoooooooooX..........",
-    "............XoooooooX...........",
-    ".............XoooooX............",
-    "..............XoooX.............",
-    "...............XoX..............",
-    "................X...............",
-    "................................",
-    "................................",
-  ],
-  briefcase: [
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "...........XXXXXXXXXX...........",
-    "...........XooooooooX...........",
-    "...........XooooooooX...........",
-    "..XXXXXXXXXXXXXXXXXXXXXXXXXXXX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooXXXXXXooooooooooX..",
-    "..XooooooooooXooooXooooooooooX..",
-    "..XXXXXXXXXXXXooooXXXXXXXXXXXX..",
-    "..XooooooooooXooooXooooooooooX..",
-    "..XooooooooooXXXXXXooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XooooooooooooooooooooooooooX..",
-    "..XXXXXXXXXXXXXXXXXXXXXXXXXXXX..",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  linkedin: [
-    "................................",
-    "................................",
-    "................................",
-    "....XXXXXXXXXXXXXXXXXXXXXXXX....",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooXXXoooooooooooooooooX...",
-    "...XooooXXXoooooooooooooooooX...",
-    "...XooooXXXoooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooXXXooXXXXXXXXXooooooX...",
-    "...XooooXXXooXXXXXXXXXXoooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooXXXooXXXoooooXXXooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "...XooooooooooooooooooooooooX...",
-    "....XXXXXXXXXXXXXXXXXXXXXXXX....",
-    "................................",
-    "................................",
-    "................................",
-  ],
-  github: [
-    "................................",
-    "..............XXXX..............",
-    "..........XXXXXXXXXXXX..........",
-    "........XXXXXXXXXXXXXXXX........",
-    ".......XXXXXXXXXXXXXXXXXX.......",
-    "......XXXXXXXXXXXXXXXXXXXX......",
-    ".....XXXXXoXXXXXXXXXXoXXXXX.....",
-    "....XXXXXXooXXXXXXXXooXXXXXX....",
-    "...XXXXXXXoooXooooXoooXXXXXXX...",
-    "...XXXXXXXooooooooooooXXXXXXX...",
-    "..XXXXXXXXooooooooooooXXXXXXXX..",
-    "..XXXXXXXXooooooooooooXXXXXXXX..",
-    "..XXXXXXXooooooooooooooXXXXXXX..",
-    "..XXXXXXXooooooooooooooXXXXXXX..",
-    ".XXXXXXXXooooooooooooooXXXXXXXX.",
-    ".XXXXXXXXooooooooooooooXXXXXXXX.",
-    ".XXXXXXXXooooooooooooooXXXXXXXX.",
-    ".XXXXXXXXXooooooooooooXXXXXXXXX.",
-    "..XXXXXXXXooooooooooooXXXXXXXX..",
-    "..XXXXXXXXXXooooooooXXXXXXXXXX..",
-    "..XXXXXXXXXXXooooooXXXXXXXXXXX..",
-    "..XXXXXXXoXXXooooooXXXXXXXXXXX..",
-    "...XXXXXXXoXXooooooXXXXXXXXXX...",
-    "...XXXXXXXXooooooooXXXXXXXXXX...",
-    "....XXXXXXXXXooooooXXXXXXXXX....",
-    ".....XXXXXXXXooooooXXXXXXXX.....",
-    "......XXXXXXXooooooXXXXXXX......",
-    ".......XXXXXXooooooXXXXXX.......",
-    "........XXXXXooooooXXXXX........",
-    "..........XXXXXXXXXXXX..........",
-    "..............XXXX..............",
-    "................................",
-  ],
+  folder: `<path class="f" d="M1.5 10.5V6.5H11.5L13.5 9.5V10.5Z"/><rect class="f" x="1.5" y="9.5" width="29" height="18"/>`,
+  doc: `<path class="f" d="M6.5 1.5H20.5L26.5 7.5V30.5H6.5Z"/><path class="f" d="M20.5 1.5V7.5H26.5"/><path d="M9.5 12.5H23.5M9.5 15.5H23.5M9.5 18.5H23.5M9.5 21.5H23.5M9.5 24.5H18.5"/>`,
+  resume: `<path class="f" d="M6.5 1.5H20.5L26.5 7.5V30.5H6.5Z"/><path class="f" d="M20.5 1.5V7.5H26.5"/><rect class="f" x="9.5" y="5.5" width="7" height="8"/><rect class="k" x="12" y="7" width="2" height="2"/><rect class="k" x="11" y="10" width="4" height="3"/><path d="M9.5 17.5H23.5M9.5 20.5H23.5M9.5 23.5H23.5M9.5 26.5H18.5"/>`,
+  mac: `<rect class="f" x="7.5" y="1.5" width="17" height="24"/><rect class="f" x="10.5" y="4.5" width="11" height="10"/><rect class="k" x="13" y="7" width="1" height="2"/><rect class="k" x="18" y="7" width="1" height="2"/><rect class="k" x="15" y="9" width="1" height="2"/><rect class="k" x="13" y="12" width="1" height="1"/><rect class="k" x="14" y="13" width="4" height="1"/><rect class="k" x="18" y="12" width="1" height="1"/><path d="M17.5 20.5H21.5"/><rect class="f" x="7.5" y="25.5" width="17" height="4"/>`,
+  hd: `<rect class="f" x="1.5" y="11.5" width="29" height="11"/><path d="M1.5 19.5H30.5"/><rect class="k" x="4" y="20" width="4" height="2"/>`,
+  trash: `<path class="f" d="M12.5 5.5V2.5H19.5V5.5"/><rect class="f" x="6.5" y="5.5" width="19" height="3"/><path class="f" d="M7.5 8.5H24.5L23.5 30.5H8.5Z"/><path d="M11.5 11.5V27.5M14.5 11.5V27.5M17.5 11.5V27.5M20.5 11.5V27.5"/>`,
+  letter: `<rect class="f" x="1.5" y="8.5" width="29" height="17"/><path d="M1.5 8.5L16 19L30.5 8.5"/>`,
+  news: `<rect class="f" x="4.5" y="2.5" width="23" height="27"/><rect class="k" x="7" y="5" width="18" height="4"/><path d="M7.5 11.5H24.5M7.5 13.5H24.5"/><rect class="f" x="7.5" y="15.5" width="8" height="7"/><path d="M17.5 16.5H24.5M17.5 18.5H24.5M17.5 20.5H24.5M7.5 24.5H24.5M7.5 26.5H24.5"/>`,
+  app: `<path class="f" d="M16 1.5L30.5 16L16 30.5L1.5 16Z"/><rect class="f" x="10.5" y="10.5" width="11" height="11"/><path d="M12.5 13.5H19.5M12.5 15.5H19.5M12.5 17.5H19.5M12.5 19.5H16.5"/>`,
+  briefcase: `<path class="f" d="M11.5 8.5V5.5H20.5V8.5"/><rect class="f" x="2.5" y="8.5" width="27" height="19"/><path d="M2.5 15.5H29.5"/><rect class="f" x="13.5" y="13.5" width="5" height="4"/>`,
+  linkedin: `<rect class="f" x="3.5" y="3.5" width="25" height="25"/><rect class="k" x="8" y="13" width="3" height="11"/><rect class="k" x="8" y="8" width="3" height="3"/><path class="k" d="M14 13h3v2h1v-1h1v-1h4v1h1v1h1v9h-3v-8h-1v-1h-2v1h-1v8h-3z"/>`,
+  github: `<path class="f" d="M16 2.5C8.5 2.5 2.5 8.5 2.5 16C2.5 22 6.5 27 12 28.5V24.5C8 25.5 7.5 22.5 7.5 22.5C6.5 20.5 5.5 20 5.5 20C4 19 5.5 19 5.5 19C7 19 8 20.5 8 20.5C9.5 23 11.5 22 12 21.5C12 20.5 12.5 20 13 19.5C9.5 19 6.5 18 6.5 13C6.5 11.5 7 10.5 8 9.5C7.5 9 7.5 7.5 8 6C8 6 9.5 5.5 12.5 7.5C13.5 7 15 7 16 7C17 7 18.5 7 19.5 7.5C22.5 5.5 24 6 24 6C24.5 7.5 24.5 9 24 9.5C25 10.5 25.5 11.5 25.5 13C25.5 18 22.5 19 19 19.5C19.5 20 20 21 20 22.5V28.5C25.5 27 29.5 22 29.5 16C29.5 8.5 23.5 2.5 16 2.5Z"/>`,
+  trophy: `<path class="f" d="M9.5 3.5H22.5V11.5C22.5 15.5 19.5 18.5 16 18.5C12.5 18.5 9.5 15.5 9.5 11.5Z"/><path d="M9.5 6.5H5.5V9.5C5.5 12.5 7.5 13.5 9.5 13.5M22.5 6.5H26.5V9.5C26.5 12.5 24.5 13.5 22.5 13.5M16 18.5V23.5"/><rect class="f" x="10.5" y="23.5" width="11" height="5"/>`,
 };
-const SMALL_ICON = {
-  folder: [
-    "................",
-    "................",
-    "................",
-    "..XXXX..........",
-    ".XooooX.........",
-    "XooooooXXXXXXXX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XoooooooooooooX.",
-    "XXXXXXXXXXXXXXX.",
-    "................",
-    "................",
-  ],
-  doc: [
-    "................",
-    "...XXXXXXX......",
-    "...XoooooXX.....",
-    "...XoooooXoX....",
-    "...XoooooXXXX...",
-    "...XooooooooX...",
-    "...XooooooooX...",
-    "...XoXXXXXXoX...",
-    "...XooooooooX...",
-    "...XoXXXXXXoX...",
-    "...XooooooooX...",
-    "...XoXXXXXXoX...",
-    "...XooooooooX...",
-    "...XooooooooX...",
-    "...XXXXXXXXXX...",
-    "................",
-  ],
-  resume: [
-    "................",
-    "...XXXXXXX......",
-    "...XoooooXX.....",
-    "...XoXXooXoX....",
-    "...XoXXooXXXX...",
-    "...XoXXoooooX...",
-    "...XooooooooX...",
-    "...XooooooooX...",
-    "...XoXXXXXXoX...",
-    "...XooooooooX...",
-    "...XoXXXXXXoX...",
-    "...XooooooooX...",
-    "...XoXXXXoooX...",
-    "...XooooooooX...",
-    "...XXXXXXXXXX...",
-    "................",
-  ],
-  mac: [
-    "...XXXXXXXXXX...",
-    "..XooooooooooX..",
-    "..XoXXXXXXXXoX..",
-    "..XoXooooooXoX..",
-    "..XoXoXooXoXoX..",
-    "..XoXooooooXoX..",
-    "..XoXoXooXoXoX..",
-    "..XoXooXXooXoX..",
-    "..XoXXXXXXXXoX..",
-    "..XooooooooooX..",
-    "..XooooooXXXoX..",
-    "..XXXXXXXXXXXX..",
-    "...XooooooooX...",
-    "...XooooooooX...",
-    "...XXXXXXXXXX...",
-    "................",
-  ],
-  news: [
-    "................",
-    "..XXXXXXXXXXXX..",
-    "..XooooooooooX..",
-    "..XoXXXXXXXXoX..",
-    "..XoXXXXXXXXoX..",
-    "..XooooooooooX..",
-    "..XoXXXXXXXXoX..",
-    "..XooooooooooX..",
-    "..XoXXXXoXXXoX..",
-    "..XoXooXoooooX..",
-    "..XoXooXoXXXoX..",
-    "..XoXooXoooooX..",
-    "..XoXXXXoXXXoX..",
-    "..XooooooooooX..",
-    "..XXXXXXXXXXXX..",
-    "................",
-  ],
-  letter: [
-    "................",
-    "................",
-    "................",
-    "XXXXXXXXXXXXXXXX",
-    "XXXooooooooooXXX",
-    "XooXooooooooXooX",
-    "XoooXooooooXoooX",
-    "XooooXXooXXooooX",
-    "XooooooXXooooooX",
-    "XooooooooooooooX",
-    "XooooooooooooooX",
-    "XooooooooooooooX",
-    "XXXXXXXXXXXXXXXX",
-    "................",
-    "................",
-    "................",
-  ],
-  app: [
-    ".......X........",
-    "......XoX.......",
-    ".....XoooX......",
-    "....XoooooX.....",
-    "...XoooooooX....",
-    "..XooXXXXXooX...",
-    ".XoooXoooXoooX..",
-    "XooooXXXXXooooX.",
-    ".XoooXoooXoooX..",
-    "..XooXXXXXooX...",
-    "...XoooooooX....",
-    "....XoooooX.....",
-    ".....XoooX......",
-    "......XoX.......",
-    ".......X........",
-    "................",
-  ],
-  briefcase: [
-    "................",
-    "................",
-    ".....XXXXXX.....",
-    ".....XooooX.....",
-    ".XXXXXXXXXXXXXX.",
-    ".XooooooooooooX.",
-    ".XooooooooooooX.",
-    ".XooooXXXXooooX.",
-    ".XXXXXXooXXXXXX.",
-    ".XooooXXXXooooX.",
-    ".XooooooooooooX.",
-    ".XooooooooooooX.",
-    ".XooooooooooooX.",
-    ".XXXXXXXXXXXXXX.",
-    "................",
-    "................",
-  ],
-  hd: [
-    "................",
-    "................",
-    "................",
-    "................",
-    "................",
-    "XXXXXXXXXXXXXXXX",
-    "XooooooooooooooX",
-    "XooooooooooooooX",
-    "XooooooooooooooX",
-    "XXXXXXXXXXXXXXXX",
-    "XoXXoooooooooooX",
-    "XXXXXXXXXXXXXXXX",
-    "................",
-    "................",
-    "................",
-    "................",
-  ],
-  trash: [
-    "......XXXX......",
-    "......XooX......",
-    "..XXXXXXXXXXXX..",
-    "..XooooooooooX..",
-    "..XXXXXXXXXXXX..",
-    "...XooooooooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooXooXooX...",
-    "...XooooooooX...",
-    "...XXXXXXXXXX...",
-  ],
-  trophy: [
-    "................",
-    "...XXXXXXXXXX...",
-    ".XXXooooooooXXX.",
-    "XooXooooooooXooX",
-    "XooXooooooooXooX",
-    ".XoXooooooooXoX.",
-    "..XXooooooooXX..",
-    "....XooooooX....",
-    ".....XXooXX.....",
-    ".......XX.......",
-    ".......XX.......",
-    ".......XX.......",
-    ".....XXXXXX.....",
-    ".....XooooX.....",
-    ".....XXXXXX.....",
-    "................",
-  ],
-};
-
-// 'X' = black pixel, 'o' = white fill (dithered when the item's window is open), '.' = transparent
-const ICON_CACHE = {};
-function bitmapMarkup(rows) {
-  let fill = "", ink = "";
-  rows.forEach((row, y) => {
-    for (let x = 0; x < row.length;) {
-      let e = x;
-      while (e < row.length && row[e] === row[x]) e++;
-      const r = `<rect x="${x}" y="${y}" width="${e - x}" height="1"/>`;
-      if (row[x] === "X") ink += r; else if (row[x] === "o") fill += r;
-      x = e;
-    }
-  });
-  return `<g class="f">${fill}</g><g class="k">${ink}</g>`;
-}
-// Icons are 32×32 bitmaps (16×16 in list view). Larger sizes are whole-number multiples.
-function svgIcon(k, size = 32) {
-  const small = size <= 16 && SMALL_ICON[k];
-  const rows = small || ICON[k] || ICON.doc;
-  const key = (small ? "s:" : "l:") + k;
-  const n = rows.length;
-  // Never draw finer than a real Mac: each icon pixel is a whole number of Mac pixels (1×, 2×, 3×…).
-  const px = n * Math.max(1, Math.round(size / n));
-  return `<svg class="icn" viewBox="0 0 ${n} ${n}" width="${px}" height="${px}" shape-rendering="crispEdges" aria-hidden="true">${ICON_CACHE[key] ||= bitmapMarkup(rows)}</svg>`;
-}
+const svgIcon = (k, size = 32) =>
+  `<svg viewBox="0 0 32 32" width="${size}" height="${size}" shape-rendering="${size % 32 ? "geometricPrecision" : "crispEdges"}" fill="none" stroke="#000" stroke-width="1" aria-hidden="true">${ICON[k] || ICON.doc}</svg>`;
 
 const APPLE = [
   "......XX...", ".....XX....", ".....X.....", "..XXX.XXX..", ".XXXXXXXXX.", "XXXXXXXXX..",
@@ -1125,7 +455,6 @@ const ITEMS = {
   about:        { name: "About Me", icon: "mac", win: "about", kind: "document", size: 4 },
   experience:   { name: "Experience", icon: "briefcase", win: "experience", kind: "document", size: 8 },
   projects:     { name: "Projects", icon: "folder", win: "projects", kind: "folder", size: 0 },
-  awards:       { name: "Awards", icon: "trophy", win: "awards", kind: "document", size: 3 },
   publications: { name: "Publications", icon: "news", win: "publications", kind: "document", size: 6 },
   contact:      { name: "Contact", icon: "letter", win: "contact", kind: "document", size: 2 },
   resume:       { name: "Résumé", icon: "resume", href: L.resume, kind: "PDF document", size: 92 },
@@ -1155,7 +484,7 @@ const linkBtns = () => `
   <a class="btn default" href="${esc(L.resume)}" target="_blank" rel="noopener">Résumé</a>`;
 
 const WINDOWS = {
-  hd: { title: DATA.diskName, type: "folder", items: ["about", "experience", "projects", "awards", "publications", "contact", "resume"], w: 560, h: 290, x: 24, y: 44 },
+  hd: { title: DATA.diskName, type: "folder", items: ["about", "experience", "projects", "publications", "contact", "resume"], w: 560, h: 290, x: 24, y: 44 },
   projects: { title: "Projects", type: "folder", items: DATA.projects.map((_, i) => "proj" + i), w: 560, h: 400, view: "icon" },
   trash: { title: "Trash", type: "folder", items: ["oldsite"], w: 300, h: 170 },
   about: {
@@ -1182,14 +511,6 @@ const WINDOWS = {
         <div class="job-top"><h3>${esc(j.org)}${j.current ? `<span class="now">NOW</span>` : ""}</h3><span class="meta">${esc(j.dates)}</span></div>
         <div class="meta">${esc(j.role)}${j.location ? " · " + esc(j.location) : ""}</div>
         ${j.bullets?.length ? `<ul>${j.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
-      </div>`).join(""),
-  },
-  awards: {
-    title: "Awards", type: "doc", w: 560, h: 340,
-    html: () => `<h1>Awards</h1>` + DATA.awards.map(a => `
-      <div class="job">
-        <div class="job-top"><h3 class="award">${svgIcon("trophy", 16)}<span>${esc(a.title)}</span></h3><span class="meta">${esc(a.date)}</span></div>
-        ${a.org ? `<div class="meta">${esc(a.org)}</div>` : ""}
       </div>`).join(""),
   },
   publications: {
@@ -1583,7 +904,6 @@ const MENUS = [
     { label: "About Me", act: () => openWindow("about") },
     { label: "Experience", act: () => openWindow("experience") },
     { label: "Projects", act: () => openWindow("projects") },
-    { label: "Awards", act: () => openWindow("awards") },
     { label: "Publications", act: () => openWindow("publications") },
     { label: "Contact", act: () => openWindow("contact") },
   ]},
@@ -1627,15 +947,9 @@ function buildMenubar() {
 function openMenu(i, t) {
   closeMenu();
   t.classList.add("on");
-  const d = renderMenu(MENUS[i].items);
-  d.style.left = Math.min(t.offsetLeft, SW() - 200) + "px";
-  SCREEN.append(d);
-  menuOpen = { i, t, d };
-}
-function renderMenu(items) {
   const d = el("div", "menu");
   d.setAttribute("role", "menu");
-  items.forEach(it => {
+  MENUS[i].items.forEach(it => {
     if (it === "-") return d.append(el("div", "sep"));
     const on = it.enabled ? it.enabled() : !it.disabled;
     const row = el("div", "mi" + (on ? "" : " dis"), `<span class="chk">${it.checked?.() ? "✓" : ""}</span><span class="lbl">${esc(it.label)}</span><span class="key">${it.key ? "⌘" + it.key : ""}</span>`);
@@ -1647,12 +961,12 @@ function renderMenu(items) {
     }
     d.append(row);
   });
-  return d;
+  d.style.left = Math.min(t.offsetLeft, SW() - 200) + "px";
+  SCREEN.append(d);
+  menuOpen = { i, t, d };
 }
 function activate(row, it) {
   if (!menuOpen || menuOpen.busy) return;
-  // a right-click press opens the menu under the pointer; ignore its own release
-  if (menuOpen.context && Date.now() - menuOpen.openedAt < 250) return;
   menuOpen.busy = true;
   let n = 0;
   const blink = setInterval(() => {
@@ -1662,77 +976,8 @@ function activate(row, it) {
 }
 function closeMenu() {
   if (!menuOpen) return;
-  menuOpen.t?.classList.remove("on"); menuOpen.d.remove(); menuOpen = null;
+  menuOpen.t.classList.remove("on"); menuOpen.d.remove(); menuOpen = null;
 }
-
-/* ---------------- right-click (contextual) menus ---------------- */
-const copyText = t => navigator.clipboard?.writeText(t).catch(() => {});
-const absURL = h => h.startsWith("mailto:") ? h.slice(7) : new URL(h, location.href).href;
-function openURL(h) { busy(); window.open(h, h.startsWith("mailto:") ? "_self" : "_blank", "noopener"); }
-
-function contextItems(target) {
-  const node = target.closest("[data-item]");
-  const link = target.closest("a[href]");
-  const w = target.closest(".win");
-  const sel = String(getSelection()).trim();
-  const items = [];
-  if (sel && w?.contains(getSelection().anchorNode)) {
-    items.push({ label: "Copy", key: "C", act: () => copyText(sel) }, "-");
-  }
-  if (node) {
-    const id = node.dataset.item, it = ITEMS[id];
-    items.push({ label: "Open", key: "O", act: () => openItem(node) });
-    if (it.href) items.push({ label: it.href.startsWith("mailto:") ? "Copy Email Address" : "Copy Link", act: () => copyText(absURL(it.href)) });
-    items.push({ label: "Get Info", key: "I", act: getInfo });
-    if (it.win && OPEN[it.win]) items.push("-", { label: "Close Window", act: () => closeWin(OPEN[it.win]) });
-    if (id === "trash") items.push("-", MENUS[4].items[1]); // Empty Trash
-    return items;
-  }
-  if (link) {
-    const h = link.getAttribute("href");
-    items.push(
-      { label: h.startsWith("mailto:") ? "Send Email" : "Open Link", act: () => openURL(h) },
-      { label: h.startsWith("mailto:") ? "Copy Email Address" : "Copy Link Address", act: () => copyText(absURL(h)) }, "-");
-  }
-  if (w) {
-    const def = WINDOWS[w.dataset.id];
-    if (def?.type === "folder") items.push(VIEW("icon"), VIEW("list"), "-");
-    else items.push({ label: "Select All", key: "A", act: () => getSelection().selectAllChildren($(".docbody", w)) }, "-");
-    if (!def?.dialog) items.push({ label: w.dataset.prev ? "Unzoom Window" : "Zoom Window", act: () => zoomWin(w) });
-    items.push({ label: "Close Window", key: "W", act: () => closeWin(w) });
-    return items;
-  }
-  // the desktop
-  return [
-    { label: "About This Macintosh…", act: aboutMac }, "-",
-    { label: "Clean Up Desktop", act: cleanUp }, "-",
-    SIZE("small"), SIZE("medium"), SIZE("large"), "-",
-    { label: "Copy Email Address", act: () => copyText(L.email) },
-  ];
-}
-
-function openContextMenu(e) {
-  closeMenu();
-  const t = e.target;
-  // focus the window or icon that was clicked, like a left click would
-  const w = t.closest(".win"); if (w) focusWin(w);
-  const node = t.closest("[data-item]"); select(node);
-  const d = renderMenu(contextItems(t));
-  SCREEN.append(d);
-  let x, y;
-  if (e.clientX || e.clientY) { x = Math.round(e.clientX / S) + 1; y = Math.round(e.clientY / S) + 1; }
-  else { const r = rectOf(node || w || t); x = r.left + 8; y = r.top + 8; } // opened from the keyboard
-  if (x + d.offsetWidth > SW() - 2) x = Math.max(2, x - d.offsetWidth - 2);
-  if (y + d.offsetHeight > SH() - 2) y = Math.max(MENU_H, y - d.offsetHeight - 2);
-  Object.assign(d.style, { left: x + "px", top: y + "px" });
-  menuOpen = { i: -1, t: null, d, context: true, openedAt: Date.now() };
-}
-
-document.addEventListener("contextmenu", e => {
-  e.preventDefault();
-  if ($(".dialog") || $("#boot") || e.target.closest("#menubar,.menu")) return;
-  openContextMenu(e);
-});
 function cleanUp() {
   $$(".win").sort((a, b) => a.style.zIndex - b.style.zIndex).forEach((w, k) => {
     delete w.dataset.prev;
