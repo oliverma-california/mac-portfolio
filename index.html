@@ -65,6 +65,8 @@ button{font:inherit;color:inherit}
 .opened{--f:url(#dither)}
 [data-item]{outline:none}
 .icon{display:flex;flex-direction:column;align-items:center;width:120px;gap:3px;padding:2px}
+/* icons keep their exact pixel size; flex layouts must never squeeze them */
+.icn{display:block;flex:none;max-width:none}
 .icon svg{display:block}
 .icon .label{font-family:var(--text);font-size:var(--g);line-height:var(--g13);padding:0 3px;background:#fff;text-align:center;max-width:120px;overflow-wrap:break-word}
 .icon.sel svg{filter:invert(1)}
@@ -1060,7 +1062,9 @@ function svgIcon(k, size = 32) {
   const rows = small || ICON[k] || ICON.doc;
   const key = (small ? "s:" : "l:") + k;
   const n = rows.length;
-  return `<svg viewBox="0 0 ${n} ${n}" width="${size}" height="${size}" shape-rendering="crispEdges" aria-hidden="true">${ICON_CACHE[key] ||= bitmapMarkup(rows)}</svg>`;
+  // Never draw finer than a real Mac: each icon pixel is a whole number of Mac pixels (1×, 2×, 3×…).
+  const px = n * Math.max(1, Math.round(size / n));
+  return `<svg class="icn" viewBox="0 0 ${n} ${n}" width="${px}" height="${px}" shape-rendering="crispEdges" aria-hidden="true">${ICON_CACHE[key] ||= bitmapMarkup(rows)}</svg>`;
 }
 
 const APPLE = [
