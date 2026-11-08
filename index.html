@@ -346,6 +346,13 @@ const DATA = {
       link: "https://medium.com/data-science/the-comprehensive-guide-to-training-and-running-yolov8-models-on-custom-datasets-22946da259c3",
     },
   ],
+  // Newest first. `org` is optional.
+  awards: [
+    { title: "Guts++ Competition — 2nd Place", org: "Jane Street", date: "October 2026" },
+    { title: "Citadel | Citadel Securities Trading Challenge — Winner", org: "Citadel | Citadel Securities", date: "September 2026" },
+    { title: "National Merit Finalist", org: "National Merit Scholarship Corporation", date: "February 2025" },
+    { title: "U.S. Presidential Scholars Program Candidate", org: "U.S. Presidential Scholars Program", date: "January 2025" },
+  ],
 };
 /* ===================================================================== */
 
@@ -431,6 +438,40 @@ function installCursors() {
 
 /* ---------------- icons (32×32, 1-bit) ---------------- */
 const ICON = {
+  trophy: [
+    "................................",
+    "................................",
+    "................................",
+    "........XXXXXXXXXXXXXXXX........",
+    "........XooooooooooooooX........",
+    "....XXXXXooooooooooooooXXXXX....",
+    "....XoooXooooooooooooooXoooX....",
+    "....XoooXooooooXXooooooXoooX....",
+    "....XoooXooooXXXXXXooooXoooX....",
+    "....XoooXoooooXXXXoooooXoooX....",
+    ".....XooXoooooXooXoooooXooX.....",
+    "......XoXooooooooooooooXoX......",
+    ".......XXooooooooooooooXX.......",
+    ".........XooooooooooooX.........",
+    "..........XooooooooooX..........",
+    "...........XooooooooX...........",
+    "............XooooooX............",
+    ".............XXXXXX.............",
+    "...............XX...............",
+    "...............XX...............",
+    "...............XX...............",
+    "...............XX...............",
+    "...........XXXXXXXXXX...........",
+    "...........XooooooooX...........",
+    ".........XXXXXXXXXXXXXX.........",
+    ".........XooooooooooooX.........",
+    ".........XooooooooooooX.........",
+    ".........XooooooooooooX.........",
+    ".........XXXXXXXXXXXXXX.........",
+    "................................",
+    "................................",
+    "................................",
+  ],
   folder: [
     "................................",
     "................................",
@@ -1084,6 +1125,7 @@ const ITEMS = {
   about:        { name: "About Me", icon: "mac", win: "about", kind: "document", size: 4 },
   experience:   { name: "Experience", icon: "briefcase", win: "experience", kind: "document", size: 8 },
   projects:     { name: "Projects", icon: "folder", win: "projects", kind: "folder", size: 0 },
+  awards:       { name: "Awards", icon: "trophy", win: "awards", kind: "document", size: 3 },
   publications: { name: "Publications", icon: "news", win: "publications", kind: "document", size: 6 },
   contact:      { name: "Contact", icon: "letter", win: "contact", kind: "document", size: 2 },
   resume:       { name: "Résumé", icon: "resume", href: L.resume, kind: "PDF document", size: 92 },
@@ -1113,7 +1155,7 @@ const linkBtns = () => `
   <a class="btn default" href="${esc(L.resume)}" target="_blank" rel="noopener">Résumé</a>`;
 
 const WINDOWS = {
-  hd: { title: DATA.diskName, type: "folder", items: ["about", "experience", "projects", "publications", "contact", "resume"], w: 560, h: 290, x: 24, y: 44 },
+  hd: { title: DATA.diskName, type: "folder", items: ["about", "experience", "projects", "awards", "publications", "contact", "resume"], w: 560, h: 290, x: 24, y: 44 },
   projects: { title: "Projects", type: "folder", items: DATA.projects.map((_, i) => "proj" + i), w: 560, h: 400, view: "icon" },
   trash: { title: "Trash", type: "folder", items: ["oldsite"], w: 300, h: 170 },
   about: {
@@ -1140,6 +1182,14 @@ const WINDOWS = {
         <div class="job-top"><h3>${esc(j.org)}${j.current ? `<span class="now">NOW</span>` : ""}</h3><span class="meta">${esc(j.dates)}</span></div>
         <div class="meta">${esc(j.role)}${j.location ? " · " + esc(j.location) : ""}</div>
         ${j.bullets?.length ? `<ul>${j.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+      </div>`).join(""),
+  },
+  awards: {
+    title: "Awards", type: "doc", w: 560, h: 340,
+    html: () => `<h1>Awards</h1>` + DATA.awards.map(a => `
+      <div class="job">
+        <div class="job-top"><h3 class="award">${svgIcon("trophy", 16)}<span>${esc(a.title)}</span></h3><span class="meta">${esc(a.date)}</span></div>
+        ${a.org ? `<div class="meta">${esc(a.org)}</div>` : ""}
       </div>`).join(""),
   },
   publications: {
@@ -1533,6 +1583,7 @@ const MENUS = [
     { label: "About Me", act: () => openWindow("about") },
     { label: "Experience", act: () => openWindow("experience") },
     { label: "Projects", act: () => openWindow("projects") },
+    { label: "Awards", act: () => openWindow("awards") },
     { label: "Publications", act: () => openWindow("publications") },
     { label: "Contact", act: () => openWindow("contact") },
   ]},
